@@ -16,10 +16,15 @@ import healthRoutes from "./routes/health.routes.js";
 const app = express();
 
 app.use(helmet());
-app.use(cors({
-    origin: process.env.CLIENT_URL,
-    credentials: true
-}));
+app.use(
+  cors({
+    origin: [
+      "http://localhost:5173",
+      process.env.CLIENT_URL,
+    ],
+    credentials: true,
+  })
+);
 
 if (process.env.NODE_ENV === "development") {
     app.use(morgan("dev"));
