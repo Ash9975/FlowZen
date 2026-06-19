@@ -28,7 +28,7 @@ function AuthHeader({
           type: "spring",
           stiffness: 140,
         }}
-        src="./src/assets/logo.png"
+        src="/logo.png"
         alt="FlowZen"
         className="mx-auto mb-5 h-20 w-20 rounded-2xl shadow-lg"
       />

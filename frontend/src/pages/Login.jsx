@@ -102,14 +102,7 @@ function Login() {
 
                         <button
                             type="button"
-                            className="
-                text-sm
-                font-medium
-                text-[#7F9E2F]
-
-                transition
-
-                hover:text-[#5F7A20]
+                            className=" text-sm font-medium text-[#7F9E2F] trans hover:text-[#5F7A20]
               "
                         >
                             Forgot Password?

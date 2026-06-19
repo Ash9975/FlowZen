@@ -3,8 +3,7 @@ import { useEffect, useState } from "react";
 
 function SplashScreen() {
 
-    const [messageIndex, setMessageIndex] =
-        useState(0);
+    const [messageIndex, setMessageIndex] = useState(0);
 
     useEffect(() => {
 
@@ -14,12 +13,9 @@ function SplashScreen() {
                 prev < messages.length - 1
                     ? prev + 1
                     : prev
-            );
-
+            )
         }, 1800);
-
         return () => clearInterval(interval);
-
     }, []);
 
     const messages = [
@@ -28,92 +24,29 @@ function SplashScreen() {
         "Loading workspace...",
         "Almost Ready..."
     ];
+
     return (
         <motion.div
-            initial={{
-                opacity: 1,
-            }}
-            exit={{
-                opacity: 0,
-            }}
-            transition={{
-                duration: .4,
-            }}
-            className="
-      fixed
-      inset-0
-      z-[9999]
-
-      flex
-      flex-col
-      items-center
-      justify-center
-
-      bg-gradient-to-br
-      from-[#F7FAEF]
-      via-white
-      to-[#EEF6DB]
-      "
+            initial={{ opacity: 1, }}
+            exit={{ opacity: 0, }}
+            transition={{ duration: .4, }}
+            className=" fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-gradient-to-br from-[#F7FAEF] via-white to-[#EEF6DB] "
         >
-            <div
-                className="
-        absolute
-        -top-40
-        -left-40
+            <div className=" absolute -top-40 -left-40 h-80 w-80 rounded-full bg-[#CDE87D]/20 blur-3xl " />
+            <div className=" absolute -bottom-40 -right-40 h-80 w-80 rounded-full bg-[#A9C957] blur-3xl " />
 
-        h-80
-        w-80
-
-        rounded-full
-
-        bg-[#CDE87D]/20
-
-        blur-3xl
-    "
-            />
-
-            <div
-                className="
-        absolute
-        -bottom-40
-        -right-40
-
-        h-80
-        w-80
-
-        rounded-full
-
-        bg-[#A9C957]/20
-
-        blur-3xl
-    "
-            />
-            {/* Logo */}
-
+            {/* LOGO */}
             <motion.img
-                initial={{
-                    scale: .7,
-                    opacity: 0,
-                }}
-                animate={{
-                    scale: [1, 1.05, 1],
-                    opacity: 1,
-                }}
+                initial={{ scale: .7, opacity: 0 }}
+                animate={{ scale: [1, 1.05, 1], opacity: 1 }}
                 transition={{
-                    scale: {
-                        repeat: Infinity,
-                        duration: 2.2,
-                    },
-                    opacity: {
-                        duration: .5,
-                    },
+                    scale: { repeat: Infinity, duration: 2.2 },
+                    opacity: { duration: .5 },
                 }}
-                transition={{
-                    duration: .5,
-                }}
-                src="./src/assets/logo.png"
+                transition={{ duration: .5, }}
+                src="/logo.png"
                 alt="FlowZen"
-                className="w-28 h-28 rounded-3xl shadow-xl"
+                className="w-28 h-28 rounded-2xl shadow-xl"
             />
 
             <motion.h1
@@ -128,19 +61,9 @@ function SplashScreen() {
                 transition={{
                     delay: .2,
                 }}
-                className="
-        mt-6
-
-        text-4xl
-        font-extrabold
-
-        text-[#344054]
-        "
+                className=" text-4xl font-extrabold text-[#344054] "
             >
-                Flow
-                <span className="text-[#7F9E2F]">
-                    Zen
-                </span>
+                Flow <span className="text-[#7F9E2F]">  Zen </span>
             </motion.h1>
 
             <motion.p
@@ -153,50 +76,27 @@ function SplashScreen() {
                 transition={{
                     delay: .35,
                 }}
-                className="
-        mt-3
-
-        text-gray-500
-      "
+                className="  mt-3 text-gray-500  "
             >
                 {messages[messageIndex]}
             </motion.p>
 
             {/* Loader */}
 
-            <div className="relative overflow-hidden mt-10 w-44 h-2 rounded-full bg-[#E7ECD8] overflow-hidden">
-
+            <div className="relative mt-10 h-2 w-44 overflow-hidden rounded-full bg-[#E7ECD8]">
                 <motion.div
-                    initial={{
-                        width: 0,
-                    }}
+                    className="absolute inset-0"
                     animate={{
                         x: ["-100%", "100%"],
                     }}
                     transition={{
                         repeat: Infinity,
-                        duration: 1.3,
+                        duration: 1.4,
                         ease: "linear",
                     }}
-                    transition={{
-                        duration: 3,
-                    }}
-                    className="
-absolute
-left-0
-top-0
-
-h-full
-w-1/2
-
-rounded-full
-
-bg-gradient-to-r
-from-[#7F9E2F]
-to-[#A9C957]
-"
-                />
-
+                >
+                    <div className="h-full w-20 bg-gradient-to-r from-transparent via-[#A9C957] to-transparent blur-[1px]" />
+                </motion.div>
             </div>
 
             <motion.p
@@ -206,11 +106,7 @@ to-[#A9C957]
                     repeat: Infinity,
                     duration: 2,
                 }}
-                className="
-        mt-2
-        text-xs
-        text-gray-400
-    "
+                className=" mt-2 text-xs text-gray-400   "
             >
                 Please wait while we prepare your workspace
             </motion.p>
