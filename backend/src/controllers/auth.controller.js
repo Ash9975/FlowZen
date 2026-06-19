@@ -30,12 +30,18 @@ export const register = async (req, res) => {
             message: "User registered Successfully"
         })
     } catch (error) {
-        console.error("REGISTER ERROR:", error);
+        console.error(error);
+
+        if (error.code === 11000) {
+            return res.status(400).json({
+                success: false,
+                message: "Mobile number already exists."
+            });
+        }
 
         return res.status(500).json({
             success: false,
             message: error.message,
-            stack: error.stack,
         });
     }
 };
