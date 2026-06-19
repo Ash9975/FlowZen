@@ -95,7 +95,7 @@ function Navbar() {
               <Link
                 to="/login"
                 onClick={() => setOpen(false)}
-                className="rounded-full bg-white px-4 py-3 text-center font-bold text-accent-foreground"
+                className="rounded-full bg-white px-4 py-3 text-center font-bold text-accent-foreground shadow-xl"
               >
                 Login
               </Link>

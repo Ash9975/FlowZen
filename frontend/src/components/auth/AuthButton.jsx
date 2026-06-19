@@ -4,6 +4,7 @@ import { LoaderCircle } from "lucide-react";
 function AuthButton({
   children,
   loading = false,
+  loadingText = "Loading...",
   disabled = false,
   type = "submit",
   className = "",
@@ -16,16 +17,16 @@ function AuthButton({
       whileHover={
         !isDisabled
           ? {
-              y: -2,
-              scale: 1.01,
-            }
+            y: -2,
+            scale: 1.01,
+          }
           : {}
       }
       whileTap={
         !isDisabled
           ? {
-              scale: 0.98,
-            }
+            scale: 0.98,
+          }
           : {}
       }
       transition={{
@@ -61,14 +62,11 @@ function AuthButton({
     >
       {loading ? (
         <span className="flex items-center justify-center gap-3">
-
           <LoaderCircle
             size={20}
             className="animate-spin"
           />
-
-          Signing In...
-
+          {loadingText}
         </span>
       ) : (
         children

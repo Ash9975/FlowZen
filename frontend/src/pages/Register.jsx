@@ -146,6 +146,7 @@ function Register() {
 
             <AuthButton
               loading={loading}
+              loadingText="Creating Account..."
             >
               Create Account
             </AuthButton>

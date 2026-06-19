@@ -114,6 +114,7 @@ function Login() {
 
                         <AuthButton
                             loading={loading}
+                            loadingText="Signing In..."
                         >
                             Sign In
                         </AuthButton>
