@@ -1,6 +1,8 @@
 import bcrypt from 'bcryptjs'
 import User from '../models/user.model.js'
+import jwt from "jsonwebtoken";
 import generateToken from '../utils/generateToken.js'
+import { blacklistToken } from "../services/tokenBlacklist.service.js";
 
 export const register = async (req, res) => {
     try {
@@ -99,6 +101,35 @@ export const login = async (req, res) => {
 
 export const logout = async (req, res) => {
     try {
+        const token = req.cookies.token;
+
+        if (token) {
+            try {
+                const decoded = jwt.verify(
+                    token,
+                    process.env.JWT_SECRET,
+                    {
+                        audience: "flowzen-users",
+                        issuer: "flowzen",
+                    }
+                );
+
+                // Remaining lifetime in seconds
+                const ttl = Math.max(
+                    decoded.exp - Math.floor(Date.now() / 1000),
+                    0
+                );
+
+                if (ttl > 0) {
+                    await blacklistToken(token, ttl);
+                }
+
+            } catch (err) {
+                // Token already invalid or expired
+                console.log("Token already expired.");
+            }
+        }
+
         res.clearCookie("token", {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
@@ -114,9 +145,11 @@ export const logout = async (req, res) => {
         });
 
     } catch (error) {
+        console.error(error);
+
         return res.status(500).json({
             success: false,
-            message: "Logout failed" || error.message
+            message: "Logout failed",
         });
     }
 };
