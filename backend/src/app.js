@@ -12,7 +12,7 @@ import processRoutes from "./routes/process.routes.js";
 import dashboardRoutes from "./routes/dashboard.routes.js";
 import errorHandler from "./middlewares/error.middleware.js";
 import healthRoutes from "./routes/health.routes.js";
-import testRoutes from "./routes/test.routes.js";
+import activityRoutes from "./routes/activity.routes.js";
 const app = express();
 
 app.use(helmet());
@@ -60,7 +60,7 @@ app.use("/api/orders", processRoutes);
 app.use("/api/dashboard", dashboardRoutes);
 
 app.use("/api/health", healthRoutes);
-app.use("/api/test", testRoutes);
+app.use("/api/activity",activityRoutes);
 
 app.use(errorHandler);
 

@@ -7,6 +7,9 @@ import Dashboard from "../pages/Dashboard";
 import CreateOrder from "../pages/CreateOrder";
 import OrderDetails from "../pages/OrderDetails";
 import EditChecklist from "../pages/EditChecklist";
+import Profile from "../pages/Profile";
+import Orders from "../pages/Orders";
+import Activity from "../pages/Activity";
 
 import ProtectedRoute from "./ProtectedRoute";
 
@@ -38,6 +41,24 @@ function AppRoutes() {
       />
 
       <Route
+        path="/orders"
+        element={
+          <ProtectedRoute>
+            <Orders />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/activity"
+        element={
+          <ProtectedRoute>
+            <Activity />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
         path="/orders/:id"
         element={
           <ProtectedRoute>
@@ -51,6 +72,15 @@ function AppRoutes() {
         element={
           <ProtectedRoute>
             <EditChecklist />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/profile"
+        element={
+          <ProtectedRoute>
+            <Profile />
           </ProtectedRoute>
         }
       />

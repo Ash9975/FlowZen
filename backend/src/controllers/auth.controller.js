@@ -70,6 +70,8 @@ export const login = async (req, res) => {
         }
 
         const token = generateToken(user._id);
+        console.log("Generated Token:", token);
+        console.log("NODE_ENV:", process.env.NODE_ENV);
         res.cookie("token", token, {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
@@ -89,6 +91,7 @@ export const login = async (req, res) => {
                     mobile: user.mobile
                 }
             })
+            console.log("Cookie set.");
 
     } catch (error) {
         console.error(error);

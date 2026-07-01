@@ -1,66 +1,196 @@
-import { Home, FileText, Plus, History, User } from "lucide-react";
-import { Link } from "react-router-dom";
+import {
+  Home,
+  FileText,
+  Plus,
+  CheckCircle2,
+  User,
+} from "lucide-react";
+
+import {
+  Link,
+  useLocation,
+} from "react-router-dom";
 
 function BottomNav() {
+  const location = useLocation();
+
+  const isActive = (path) => {
+    if (path === "/dashboard") {
+      return location.pathname === "/dashboard";
+    }
+
+    return location.pathname.startsWith(path);
+  };
+
+  const navItems = [
+    {
+      label: "Home",
+      icon: Home,
+      path: "/dashboard",
+    },
+    {
+      label: "Orders",
+      icon: FileText,
+      path: "/orders",
+    },
+    {
+      label: "Activity",
+      icon: CheckCircle2,
+      path: "/activity",
+    },
+    {
+      label: "Profile",
+      icon: User,
+      path: "/profile",
+    },
+  ];
+
   return (
-    <div className="fixed
-    bottom-0
-    left-1/2
-    -translate-x-1/2
-    w-full
-    max-w-md
-    border-t
-    border-border
-    bg-white
-    z-50">
-      <div className="flex items-center justify-around py-2 font-extrabold">
+    <div
+      className="
+        fixed
+        bottom-0
+        left-1/2
+        z-50
 
-        <Link
-          to="/dashboard"  className="flex flex-col items-center text-primary "
-        >
-          <Home size={22} />
-          <span className="mt-1 text-xs font-medium">
-            Home
-          </span>
-        </Link>
+        w-full
+        max-w-md
 
-        <Link
-          to="/orders"
-          className="flex flex-col items-center text-muted-foreground"
-        >
-          <FileText size={22} />
-          <span className="mt-1 text-xs">
-            Orders
-          </span>
-        </Link>
+        -translate-x-1/2
 
-        <Link
-          to="/create"
-          className="flex h-14 w-14 mb-5 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-card"
-        >
-          <Plus size={28} />
-        </Link>
+        border-t
+        border-[#E7EDD9]
 
-        <Link
-          to="/history"
-          className="flex flex-col items-center text-muted-foreground"
-        >
-          <History size={22} />
-          <span className="mt-1 text-xs">
-            History
-          </span>
-        </Link>
+        bg-white/95
 
-        <Link
-          to="/profile"
-          className="flex flex-col items-center text-muted-foreground"
-        >
-          <User size={22} />
-          <span className="mt-1 text-xs">
-            Profile
-          </span>
-        </Link>
+        backdrop-blur-xl
+      "
+    >
+      <div className="grid grid-cols-5 items-center px-2 py-3">
 
+        {/* Home & Orders */}
+
+        {navItems.slice(0, 2).map((item) => {
+          const Icon = item.icon;
+          const active = isActive(item.path);
+
+          return (
+            <Link
+              key={item.path}
+              to={item.path}
+              className="flex justify-center"
+            >
+              <div
+                className={`
+                  w-16
+
+                  flex
+                  flex-col
+                  items-center
+                  justify-center
+
+                  rounded-2xl
+
+                  py-2
+
+                  transition-all
+                  duration-300
+
+                  ${
+                    active
+                      ? "bg-[#EEF6D8] text-[#7F9E2F]"
+                      : "text-[#98A2B3]"
+                  }
+                `}
+              >
+                <Icon size={22} />
+
+                <span className="mt-1 text-[11px] font-semibold">
+                  {item.label}
+                </span>
+              </div>
+            </Link>
+          );
+        })}
+
+        {/* Create Button */}
+
+        <div className="flex justify-center">
+          <Link
+            to="/create"
+            className="
+              -mt-8
+
+              flex
+              h-16
+              w-16
+
+              items-center
+              justify-center
+
+              rounded-full
+
+              bg-[#7F9E2F]
+
+              text-white
+
+              shadow-[0_10px_25px_rgba(127,158,47,0.35)]
+
+              transition-all
+              duration-300
+
+              hover:scale-105
+              active:scale-95
+            "
+          >
+            <Plus size={30} />
+          </Link>
+        </div>
+
+        {/* Completed & Profile */}
+
+        {navItems.slice(2).map((item) => {
+          const Icon = item.icon;
+          const active = isActive(item.path);
+
+          return (
+            <Link
+              key={item.path}
+              to={item.path}
+              className="flex justify-center"
+            >
+              <div
+                className={`
+                  w-16
+
+                  flex
+                  flex-col
+                  items-center
+                  justify-center
+
+                  rounded-2xl
+
+                  py-2
+
+                  transition-all
+                  duration-300
+
+                  ${
+                    active
+                      ? "bg-[#EEF6D8] text-[#7F9E2F]"
+                      : "text-[#98A2B3]"
+                  }
+                `}
+              >
+                <Icon size={22} />
+
+                <span className="mt-1 text-[11px] font-semibold">
+                  {item.label}
+                </span>
+              </div>
+            </Link>
+          );
+        })}
       </div>
     </div>
   );

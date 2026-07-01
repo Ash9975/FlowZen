@@ -1,6 +1,7 @@
 import Order from "../models/order.model.js";
 import Checklist from "../models/checklist.model.js";
 import extractOrderItems from "../services/extractOrderItems.js";
+import { logActivity } from "../services/activity.service.js";
 
 export const processOrder = async (
     req,
@@ -30,7 +31,7 @@ export const processOrder = async (
         if (existingChecklist.length > 0) {
             return res.status(400).json({
                 success: false,
-                message:"Checklist already generated",
+                message: "Checklist already generated",
             });
         }
 
@@ -52,6 +53,14 @@ export const processOrder = async (
                     unit: item.unit,
                 }))
             );
+
+        await logActivity({
+            user: req.user._id,
+            order: order._id,
+            type: "ai",
+            title: "Checklist Generated",
+            description: `AI generated ${items.length} checklist items.`,
+        });
 
         await Order.findByIdAndUpdate(
             order._id,

@@ -1,6 +1,7 @@
 import Order from "../models/order.model.js";
 import Checklist from "../models/checklist.model.js";
 import uploadToCloudinary from "../utils/uploadToCloudinary.js";
+import { logActivity } from "../services/activity.service.js";
 
 export const createOrder = async (req, res) => {
   try {
@@ -35,6 +36,14 @@ export const createOrder = async (req, res) => {
         fileType: req.file.mimetype,
         owner: req.user._id,
       });
+
+    await logActivity({
+      user: req.user._id,
+      order: order._id,
+      type: "created",
+      title: "Order Created",
+      description: `${order.customerName}'s order was created.`,
+    });
 
     return res.status(201).json({
       success: true,
@@ -160,6 +169,14 @@ export const updateOrder = async (req, res) => {
       });
     }
 
+    await logActivity({
+      user: req.user._id,
+      order: order._id,
+      type: "updated",
+      title: "Order Updated",
+      description: `${order.customerName}'s order was updated.`,
+    });
+
     return res.status(200).json({
       success: true,
       order,
@@ -175,6 +192,13 @@ export const updateOrder = async (req, res) => {
 
 export const deleteOrder = async (req, res) => {
   try {
+    await logActivity({
+      user: req.user._id,
+      order: order._id,
+      type: "deleted",
+      title: "Order Deleted",
+      description: `${order.customerName}'s order was deleted.`,
+    });
     const order = await Order.findOneAndDelete({
       _id: req.params.id,
       owner: req.user._id,
@@ -225,6 +249,13 @@ export const completeOrder = async (req, res) => {
     order.completedAt = new Date();
 
     await order.save();
+    await logActivity({
+      user: req.user._id,
+      order: order._id,
+      type: "completed",
+      title: "Order Completed",
+      description: `${order.customerName}'s order was packed successfully.`,
+    });
 
     return res.status(200).json({
       success: true,
