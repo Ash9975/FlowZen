@@ -105,16 +105,12 @@ export const logout = async (req, res) => {
 
         if (token) {
             try {
-                const decoded = jwt.verify(
-                    token,
-                    process.env.JWT_SECRET,
-                    {
-                        audience: "flowzen-users",
-                        issuer: "flowzen",
-                    }
-                );
+                const decoded = jwt.verify(token, process.env.JWT_SECRET, {
+                    audience: "flowzen-users",
+                    issuer: "flowzen",
+                });
 
-                // Remaining lifetime in seconds
+                // Remaining lifetime of the JWT (in seconds)
                 const ttl = Math.max(
                     decoded.exp - Math.floor(Date.now() / 1000),
                     0
@@ -123,9 +119,7 @@ export const logout = async (req, res) => {
                 if (ttl > 0) {
                     await blacklistToken(token, ttl);
                 }
-
             } catch (err) {
-                // Token already invalid or expired
                 console.log("Token already expired.");
             }
         }
@@ -143,7 +137,6 @@ export const logout = async (req, res) => {
             success: true,
             message: "Logout Successful",
         });
-
     } catch (error) {
         console.error(error);
 

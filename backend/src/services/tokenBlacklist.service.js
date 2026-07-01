@@ -1,28 +1,30 @@
+import crypto from "crypto";
 import redis from "../config/redis.js";
 
-//  Add JWT to Redis blacklist
-//  @param {string} token
-//  @param {number} ttl Remaining lifetime in seconds
+const getKey = (token) => {
+    const hash = crypto
+        .createHash("sha256")
+        .update(token)
+        .digest("hex");
 
-export const blacklistToken = async (token, ttl) => {
-  if (!token || !ttl) return;
-
-  await redis.set(
-    `blacklist:${token}`,
-    "true",
-    "EX",
-    ttl
-  );
+    return `blacklist:${hash}`;
 };
 
-// Check whether token is blacklisted
+export const blacklistToken = async (token, ttl) => {
+    if (!token || ttl <= 0) return;
+
+    await redis.set(
+        getKey(token),
+        "true",
+        "EX",
+        ttl
+    );
+};
 
 export const isTokenBlacklisted = async (token) => {
-  if (!token) return false;
+    if (!token) return false;
 
-  const exists = await redis.get(
-    `blacklist:${token}`
-  );
+    const exists = await redis.get(getKey(token));
 
-  return exists !== null;
+    return exists !== null;
 };
