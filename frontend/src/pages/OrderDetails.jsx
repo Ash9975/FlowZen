@@ -10,7 +10,6 @@ import OrderInfo from "../components/order-details/OrderInfo";
 import ChecklistList from "../components/order-details/ChecklistList";
 import CompleteOrderButton from "../components/order-details/CompleteOrderButton";
 import EmptyChecklist from "../components/order-details/EmptyChecklist";
-import BottomNav from "../components/dashboard/BottomNav";
 import CompletionCard from "../components/order-details/CompletionCard";
 import { useCallback } from "react";
 
@@ -239,7 +238,6 @@ function OrderDetails() {
           packedTime={getPackingTime()}
         />
       )}
-      <BottomNav />
     </motion.div>
   );
 }

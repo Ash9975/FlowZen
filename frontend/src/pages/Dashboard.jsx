@@ -1,110 +1,106 @@
-import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-
-import api from "../api/axios";
 
 import DashboardHeader from "../components/dashboard/DashboardHeader";
 import StatsCards from "../components/dashboard/StatsCard";
 import RecentOrders from "../components/dashboard/RecentOrders";
-import BottomNav from "../components/dashboard/BottomNav";
+
+import StatsSkeleton from "../components/dashboard/StatsSkeleton";
+import RecentOrdersSkeleton from "../components/dashboard/RecentOrdersSkeleton";
+
+import {
+  useDashboardStats,
+  useRecentOrders,
+} from "../hooks/useDashboard.js";
 
 function Dashboard() {
-  const [stats, setStats] = useState(null);
-  const [orders, setOrders] = useState([]);
 
-  useEffect(() => {
-    const loadData = async () => {
-      try {
-        const [statsRes, ordersRes] =
-          await Promise.all([
-            api.get("/dashboard/stats"),
-            api.get("/dashboard/recent-orders"),
-          ]);
+  const {
+    data: stats,
+    isLoading: statsLoading,
+    isError: statsError,
+    error: statsErrorMessage,
+  } = useDashboardStats();
 
-        setStats(statsRes.data.stats);
-        setOrders(ordersRes.data.orders);
-
-      } catch (error) {
-        console.error(error);
-      }
-    };
-
-    loadData();
-  }, []);
-
-  const container = {
-    hidden: {},
-    show: {
-      transition: {
-        staggerChildren: 0.12,
-      },
-    },
-  };
+  const {
+    data: orders,
+    isLoading: ordersLoading,
+    isError: ordersError,
+    error: ordersErrorMessage,
+  } = useRecentOrders();
 
   const item = {
     hidden: {
       opacity: 0,
-      y: 20,
+      y: 8,
     },
     show: {
       opacity: 1,
       y: 0,
       transition: {
-        duration: 0.35,
+        duration: 0.25,
+        ease: "easeOut",
       },
     },
   };
 
+  const container = {
+    hidden: {},
+    show: {
+      transition: {
+        staggerChildren: 0.08,
+      },
+    },
+  };
+
+  if (statsError || ordersError) {
+    return (
+      <div className="flex h-[60vh] items-center justify-center text-center">
+        <div>
+          <h2 className="text-xl font-bold">
+            Something went wrong
+          </h2>
+
+          <p className="mt-2 text-sm text-gray-500">
+            {statsErrorMessage?.message ||
+              ordersErrorMessage?.message}
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <motion.div
-      initial={{
-        opacity: 0,
-        x: 20,
-      }}
-      animate={{
-        opacity: 1,
-        x: 0,
-      }}
-      transition={{
-        duration: 0.35,
-      }}
-      className="min-h-screen "
-    >
+    <div className="px-6 pt-8 pb-28">
+
       <motion.div
-        initial={{
-          opacity: 0,
-          y: 20,
-        }}
-        animate={{
-          opacity: 1,
-          y: 0,
-        }}
-        transition={{
-          delay: 0.1,
-        }}
-        className="mx-auto max-w-md min-h-screen bg-white px-6 pt-8 pb-28 shadow-sm"
+        variants={container}
+        initial="hidden"
+        animate="show"
       >
-        <motion.div
-          variants={container}
-          initial="hidden"
-          animate="show"
-        >
-          <motion.div variants={item}>
-            <DashboardHeader />
-          </motion.div>
 
-          <motion.div variants={item}>
-            <StatsCards stats={stats} />
-          </motion.div>
-
-          <motion.div variants={item}>
-            <RecentOrders orders={orders} />
-          </motion.div>
+        <motion.div variants={item}>
+          <DashboardHeader />
         </motion.div>
 
-        <BottomNav />
+        <motion.div variants={item}>
+          {statsLoading ? (
+            <StatsSkeleton />
+          ) : (
+            <StatsCards stats={stats} />
+          )}
+        </motion.div>
+
+        <motion.div variants={item}>
+          {ordersLoading ? (
+            <RecentOrdersSkeleton />
+          ) : (
+            <RecentOrders orders={orders} />
+          )}
+        </motion.div>
+
       </motion.div>
-    </motion.div>
+
+    </div>
   );
 }
 

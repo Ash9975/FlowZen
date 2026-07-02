@@ -1,91 +1,79 @@
 import { Routes, Route } from "react-router-dom";
 
 import Landing from "../pages/Landing";
-import Register from "../pages/Register";
 import Login from "../pages/Login";
+import Register from "../pages/Register";
+
 import Dashboard from "../pages/Dashboard";
+import Orders from "../pages/Orders";
+import Activity from "../pages/Activity";
+import Profile from "../pages/Profile";
 import CreateOrder from "../pages/CreateOrder";
 import OrderDetails from "../pages/OrderDetails";
 import EditChecklist from "../pages/EditChecklist";
-import Profile from "../pages/Profile";
-import Orders from "../pages/Orders";
-import Activity from "../pages/Activity";
 
 import ProtectedRoute from "./ProtectedRoute";
+import MainLayout from "../layouts/MainLayout";
 
 function AppRoutes() {
-  return (
-    <Routes>
-      {/* Public Routes */}
-      <Route path="/" element={<Landing />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<Register />} />
+    return (
+        <Routes>
 
-      {/* Protected Routes */}
-      <Route
-        path="/dashboard"
-        element={
-          <ProtectedRoute>
-            <Dashboard />
-          </ProtectedRoute>
-        }
-      />
+            {/* Public Routes */}
 
-      <Route
-        path="/create"
-        element={
-          <ProtectedRoute>
-            <CreateOrder />
-          </ProtectedRoute>
-        }
-      />
+            <Route path="/" element={<Landing />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
 
-      <Route
-        path="/orders"
-        element={
-          <ProtectedRoute>
-            <Orders />
-          </ProtectedRoute>
-        }
-      />
+            {/* Protected Routes */}
 
-      <Route
-        path="/activity"
-        element={
-          <ProtectedRoute>
-            <Activity />
-          </ProtectedRoute>
-        }
-      />
+            <Route
+                element={
+                    <ProtectedRoute>
+                        <MainLayout />
+                    </ProtectedRoute>
+                }
+            >
 
-      <Route
-        path="/orders/:id"
-        element={
-          <ProtectedRoute>
-            <OrderDetails />
-          </ProtectedRoute>
-        }
-      />
+                <Route
+                    path="/dashboard"
+                    element={<Dashboard />}
+                />
 
-      <Route
-        path="/orders/:id/edit"
-        element={
-          <ProtectedRoute>
-            <EditChecklist />
-          </ProtectedRoute>
-        }
-      />
+                <Route
+                    path="/orders"
+                    element={<Orders />}
+                />
 
-      <Route
-        path="/profile"
-        element={
-          <ProtectedRoute>
-            <Profile />
-          </ProtectedRoute>
-        }
-      />
-    </Routes>
-  );
+                <Route
+                    path="/activity"
+                    element={<Activity />}
+                />
+
+                <Route
+                    path="/profile"
+                    element={<Profile />}
+                />
+
+                <Route
+                    path="/create"
+                    element={<CreateOrder />}
+                />
+
+                <Route
+                    path="/orders/:id"
+                    element={<OrderDetails />}
+                />
+
+                <Route
+                    path="/orders/:id/edit"
+                    element={<EditChecklist />}
+                />
+
+            </Route>
+
+        </Routes>
+    );
 }
 
 export default AppRoutes;

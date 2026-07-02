@@ -9,7 +9,6 @@ import FilterTabs from "../components/orders/FilterTabs";
 import OrdersList from "../components/orders/OrdersList";
 import EmptyOrders from "../components/orders/EmptyOrders";
 import OrdersSkeleton from "../components/orders/OrdersSkeleton";
-import BottomNav from "../components/dashboard/BottomNav";
 
 function Orders() {
 
@@ -124,8 +123,6 @@ function Orders() {
 
                     )
                 }
-
-                <BottomNav />
 
             </div>
 

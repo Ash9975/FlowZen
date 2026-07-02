@@ -8,8 +8,6 @@ import ActivityList from "../components/activity/ActivityList";
 import ActivitySkeleton from "../components/activity/ActivitySkeleton";
 import EmptyActivity from "../components/activity/EmptyActivity";
 
-import BottomNav from "../components/dashboard/BottomNav";
-
 function Activity() {
     const [activities, setActivities] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -55,7 +53,6 @@ function Activity() {
 
             </div>
 
-            <BottomNav />
         </motion.div>
     );
 }

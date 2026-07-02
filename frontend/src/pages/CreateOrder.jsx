@@ -8,7 +8,6 @@ import CustomerInput from "../components/create-order/CustomerInput";
 import UploadBox from "../components/create-order/UploadBox";
 import NotesInput from "../components/create-order/NotesInput";
 import CreateButton from "../components/create-order/CreateButton";
-import BottomNav from "../components/dashboard/BottomNav";
 
 function CreateOrder() {
   const navigate = useNavigate();
@@ -165,7 +164,6 @@ function CreateOrder() {
         </motion.div>
       </motion.div>
 
-      <BottomNav />
     </motion.div>
   );
 }

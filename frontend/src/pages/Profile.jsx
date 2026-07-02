@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { motion } from "framer-motion";
-
-import api from "../api/axios";
 import { useNavigate } from "react-router-dom";
+import api from "../api/axios";
+import { useProfile } from "../hooks/useProfile";
 
 import ProfileHero from "../components/profile/ProfileHero";
 import UserInfoCard from "../components/profile/UserInfoCard";
@@ -10,37 +10,20 @@ import QuickActions from "../components/profile/QuickActions";
 import LogoutButton from "../components/profile/LogoutButton";
 import LogoutModal from "../components/profile/LogoutModal";
 import ProfileSkeleton from "../components/profile/ProfileSkeleton";
-import BottomNav from "../components/dashboard/BottomNav";
 
 function Profile() {
-    const [user, setUser] = useState(null);
-
-    const [loading, setLoading] = useState(true);
 
     const [logoutOpen, setLogoutOpen] = useState(false);
 
     const [logoutLoading, setLogoutLoading] =
         useState(false);
 
-    useEffect(() => {
-        const fetchProfile = async () => {
-            try {
-                const { data } = await api.get("/auth/me");
-
-                setUser(data.user);
-
-            } catch (error) {
-                console.error(error);
-
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchProfile();
-
-    }, []);
-
+    const {
+        data: user,
+        isLoading,
+        isError,
+        error,
+    } = useProfile();
 
 
 
@@ -75,7 +58,7 @@ function Profile() {
         hidden: {},
         show: {
             transition: {
-                staggerChildren: 0.12,
+                staggerChildren: 0.05,
             },
         },
     };
@@ -83,137 +66,85 @@ function Profile() {
     const item = {
         hidden: {
             opacity: 0,
-            y: 20,
+            y: 8,
+            scale: 0.99,
         },
         show: {
             opacity: 1,
             y: 0,
+            scale: 1,
             transition: {
-                duration: .35,
+                duration: 0.22,
+                ease: "easeOut",
             },
         },
     };
 
+    if (isError) {
+        return (
+            <div className="flex h-[70vh] items-center justify-center">
+                <div className="text-center">
+                    <h2 className="text-lg font-semibold">
+                        Failed to load profile
+                    </h2>
+
+                    <p className="mt-2 text-sm text-gray-500">
+                        {error.message}
+                    </p>
+                </div>
+            </div>
+        );
+    }
+
     return (
-
-        <motion.div>
-
-            {
-
-                loading
-
-                    ?
-
-                    <ProfileSkeleton />
-
-                    :
-
-                    <>
-                        <motion.div
-                            initial={{
-                                opacity: 0,
-                                x: 20,
-                            }}
-                            animate={{
-                                opacity: 1,
-                                x: 0,
-                            }}
-                            transition={{
-                                duration: .35,
-                            }}
-                            className="min-h-screen"
-                        >
-                            <motion.div
-                                initial={{
-                                    opacity: 0,
-                                    y: 20,
-                                }}
-                                animate={{
-                                    opacity: 1,
-                                    y: 0,
-                                }}
-                                transition={{
-                                    delay: .1,
-                                }}
-                                className="
-                        mx-auto
-                        max-w-md
-                        min-h-screen
-
-                        bg-white
-
-                        px-6
-                        pt-8
-                        pb-28
-
-                        shadow-sm
-                    "
-                            >
-
-                                <motion.div
-                                    variants={container}
-                                    initial="hidden"
-                                    animate="show"
-                                    className="space-y-6"
-                                >
-
-                                    <motion.div variants={item}>
-
-                                        <ProfileHero
-                                            user={user}
-                                        />
-
-                                    </motion.div>
-
-                                    <motion.div variants={item}>
-
-                                        <UserInfoCard
-                                            user={user}
-                                        />
-
-                                    </motion.div>
-
-                                    <motion.div variants={item}>
-
-                                        <QuickActions />
-
-                                    </motion.div>
-
-                                    <motion.div variants={item}>
-
-                                        <LogoutButton
-                                            onLogout={() =>
-                                                setLogoutOpen(true)
-                                            }
-                                        />
-
-                                    </motion.div>
-
-                                </motion.div>
-
-                                <BottomNav />
-
-                            </motion.div>
+        <>
+            {isLoading ? (
+                <ProfileSkeleton />
+            ) : (
+                <div
+                    className="
+                    px-6
+                    pt-8
+                    pb-28
+                "
+                >
+                    <motion.div
+                        variants={container}
+                        initial="hidden"
+                        animate="show"
+                        className="space-y-6"
+                    >
+                        <motion.div variants={item}>
+                            <ProfileHero user={user} />
                         </motion.div>
 
-                        <LogoutModal
-                            open={logoutOpen}
-                            loading={logoutLoading}
-                            onClose={() =>
-                                setLogoutOpen(false)
-                            }
-                            onConfirm={handleLogout}
-                        />
-                    </>
+                        <motion.div variants={item}>
+                            <UserInfoCard user={user} />
+                        </motion.div>
 
-            }
+                        <motion.div variants={item}>
+                            <QuickActions />
+                        </motion.div>
 
-            <BottomNav />
+                        <motion.div variants={item}>
+                            <LogoutButton
+                                onLogout={() =>
+                                    setLogoutOpen(true)
+                                }
+                            />
+                        </motion.div>
+                    </motion.div>
+                </div>
+            )}
 
-        </motion.div>
-
-    )
-
+            <LogoutModal
+                open={logoutOpen}
+                loading={logoutLoading}
+                onClose={() => setLogoutOpen(false)}
+                onConfirm={handleLogout}
+            />
+        </>
+    );
 
 }
 
