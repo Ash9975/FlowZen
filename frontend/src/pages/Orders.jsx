@@ -1,7 +1,6 @@
-import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
+import { useState } from "react";
 
-import api from "../api/axios";
+import { useOrders } from "../hooks/useOrders";
 
 import OrderHeader from "../components/orders/OrderHeader";
 import SearchBar from "../components/orders/SearchBar";
@@ -12,121 +11,83 @@ import OrdersSkeleton from "../components/orders/OrdersSkeleton";
 
 function Orders() {
 
-    const [orders, setOrders] = useState([]);
-
-    const [loading, setLoading] = useState(true);
-
     const [search, setSearch] = useState("");
-
     const [filter, setFilter] = useState("all");
 
-    useEffect(() => {
+    const {
+        data,
+        isLoading,
+        isError,
+        error,
+    } = useOrders(search, filter);
 
-        const fetchOrders = async () => {
+    console.log("Query Data:", data);
 
-            try {
+    const orders = data?.orders ?? [];
 
-                const { data } = await api.get("/orders");
-
-                setOrders(data.orders);
-
-            } catch (err) {
-
-                console.log(err);
-
-            } finally {
-
-                setLoading(false);
-
-            }
-
-        };
-
-        fetchOrders();
-
-    }, []);
-
-    const filteredOrders = orders.filter(order => {
-
-        const matchesSearch =
-            order.customerName
-                .toLowerCase()
-                .includes(search.toLowerCase());
-
-        if (filter === "all")
-            return matchesSearch;
-
+    console.log(filter);
+    console.log(orders);
+    if (isError) {
         return (
-            order.status === filter &&
-            matchesSearch
-        );
+            <div className="flex h-[70vh] items-center justify-center">
+                <div className="text-center">
+                    <h2 className="text-lg font-semibold">
+                        Failed to load orders
+                    </h2>
 
-    });
+                    <p className="mt-2 text-sm text-gray-500">
+                        {error.message}
+                    </p>
+                </div>
+            </div>
+        );
+    }
 
     return (
 
-        <motion.div
-            initial={{
-                opacity: 0,
-                x: 20,
-            }}
-            animate={{
-                opacity: 1,
-                x: 0,
-            }}
-            transition={{
-                duration: .35,
-            }}
-            className="min-h-screen"
+        <div
+            className="
+                mx-auto
+                max-w-md
+                min-h-screen
+                bg-white
+                px-6
+                pt-8
+                pb-28
+            "
         >
 
-            <div
-                className="
-                    mx-auto
-                    max-w-md
-                    min-h-screen
+            <OrderHeader />
 
-                    bg-white
+            <SearchBar
+                value={search}
+                onChange={setSearch}
+            />
 
-                    px-6
-                    pt-8
-                    pb-28
-                "
-            >
+            <FilterTabs
+                value={filter}
+                onChange={setFilter}
+            />
 
-                <OrderHeader />
+            {
+                isLoading ? (
 
-                <SearchBar
-                    value={search}
-                    onChange={setSearch}
-                />
+                    <OrdersSkeleton />
 
-                <FilterTabs
-                    value={filter}
-                    onChange={setFilter}
-                />
+                ) : orders.length === 0 ? (
 
-                {
-                    loading ? (
+                    <EmptyOrders />
 
-                        <OrdersSkeleton />
+                ) : (
 
-                    ) : filteredOrders.length === 0 ? (
+                    <OrdersList
+                        orders={orders}
+                    />
 
-                        <EmptyOrders />
+                )
+            }
 
-                    ) : (
-
-                        <OrdersList
-                            orders={filteredOrders}
-                        />
-
-                    )
-                }
-
-            </div>
-
-        </motion.div>
+        </div>
 
     );
 

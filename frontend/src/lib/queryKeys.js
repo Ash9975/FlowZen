@@ -10,10 +10,20 @@ export const queryKeys = {
     orders: {
 
         all: ["orders"],
-        detail: (id) => ["orders", id],
+
+        list: (search, status, page) => [
+            "orders",
+            search,
+            status,
+            page,
+        ],
+
+        detail: id => [
+            "orders",
+            id,
+        ],
 
     },
-
     profile: ["profile"],
     activity: ["activity"],
 

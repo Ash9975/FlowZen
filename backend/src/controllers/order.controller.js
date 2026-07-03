@@ -63,24 +63,35 @@ export const createOrder = async (req, res) => {
 export const getOrders = async (req, res) => {
   try {
 
+
+    console.log("req.query:", req.query);
+
     const page = Number(req.query.page) || 1;
     const limit = Number(req.query.limit) || 10;
 
     const skip = (page - 1) * limit;
 
     const search = req.query.search || "";
+    const status = req.query.status || "all";
 
     const query = {
       owner: req.user._id,
+
       customerName: {
         $regex: search,
         $options: "i",
       },
     };
 
+    if (status !== "all") {
+      query.status = status;
+    }
+
     const totalOrders =
       await Order.countDocuments(query);
 
+    console.log("Status:", status);
+    console.log("Mongo Query:", query);
     const orders = await Order.find(query)
       .sort({
         createdAt: -1,

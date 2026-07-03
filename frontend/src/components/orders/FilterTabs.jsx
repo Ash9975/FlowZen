@@ -35,9 +35,7 @@ function FilterTabs({
                 {tabs.map((tab) => (
                     <button
                         key={tab.value}
-                        onClick={() =>
-                            onChange(tab.value)
-                        }
+                        onClick={() => onChange(tab.value)}
                         className="
                             relative
 
@@ -82,11 +80,10 @@ function FilterTabs({
                                 relative
                                 z-10
 
-                                ${
-                                    value ===
+                                ${value ===
                                     tab.value
-                                        ? "text-[#7F9E2F]"
-                                        : "text-[#667085]"
+                                    ? "text-[#7F9E2F]"
+                                    : "text-[#667085]"
                                 }
                             `}
                         >
