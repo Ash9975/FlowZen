@@ -1,7 +1,4 @@
-import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
-
-import api from "../api/axios";
+import { useActivity } from "../hooks/useActivity";
 
 import ActivityHeader from "../components/activity/ActivityHeader";
 import ActivityList from "../components/activity/ActivityList";
@@ -9,52 +6,66 @@ import ActivitySkeleton from "../components/activity/ActivitySkeleton";
 import EmptyActivity from "../components/activity/EmptyActivity";
 
 function Activity() {
-    const [activities, setActivities] = useState([]);
-    const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        const loadActivity = async () => {
-            try {
-                const { data } = await api.get("/activity");
+    const {
+        data: activities = [],
+        isLoading,
+        isError,
+        error,
+    } = useActivity();
 
-                setActivities(data.activities);
-            } catch (error) {
-                console.log(error);
-            } finally {
-                setLoading(false);
-            }
-        };
+    if (isError) {
+        return (
+            <div className="flex h-[70vh] items-center justify-center">
+                <div className="text-center">
 
-        loadActivity();
-    }, []);
+                    <h2 className="text-lg font-semibold">
+                        Failed to load activity
+                    </h2>
+
+                    <p className="mt-2 text-sm text-gray-500">
+                        {error.message}
+                    </p>
+
+                </div>
+            </div>
+        );
+    }
 
     return (
-        <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: .35 }}
-            className="min-h-screen"
+
+        <div
+            className="
+                px-6
+                pt-8
+                pb-28
+            "
         >
-            <div className="mx-auto max-w-md min-h-screen bg-white px-6 pt-8 pb-28">
 
-                <ActivityHeader />
+            <ActivityHeader />
 
-                {
-                    loading ? (
-                        <ActivitySkeleton />
-                    ) : activities.length === 0 ? (
-                        <EmptyActivity />
-                    ) : (
-                        <ActivityList
-                            activities={activities}
-                        />
-                    )
-                }
+            {
+                isLoading ? (
 
-            </div>
+                    <ActivitySkeleton />
 
-        </motion.div>
+                ) : activities.length === 0 ? (
+
+                    <EmptyActivity />
+
+                ) : (
+
+                    <ActivityList
+                        activities={activities}
+                    />
+
+                )
+            }
+
+        </div>
+
     );
+
 }
 
 export default Activity;

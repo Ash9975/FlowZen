@@ -21,12 +21,8 @@ function Orders() {
         error,
     } = useOrders(search, filter);
 
-    console.log("Query Data:", data);
-
     const orders = data?.orders ?? [];
 
-    console.log(filter);
-    console.log(orders);
     if (isError) {
         return (
             <div className="flex h-[70vh] items-center justify-center">
@@ -47,10 +43,6 @@ function Orders() {
 
         <div
             className="
-                mx-auto
-                max-w-md
-                min-h-screen
-                bg-white
                 px-6
                 pt-8
                 pb-28

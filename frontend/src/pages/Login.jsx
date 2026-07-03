@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+
 import api from "../api/axios";
 import { useAuth } from "../context/AuthContext";
 
@@ -14,6 +15,7 @@ import AuthButton from "../components/auth/AuthButton";
 import AuthFooter from "../components/auth/AuthFooter";
 
 function Login() {
+
     const navigate = useNavigate();
     const { setUser } = useAuth();
 
@@ -25,18 +27,22 @@ function Login() {
     });
 
     const handleChange = (e) => {
-        setFormData((prev) => ({
+
+        setFormData(prev => ({
             ...prev,
             [e.target.name]: e.target.value,
         }));
+
     };
 
     const handleSubmit = async (e) => {
+
         e.preventDefault();
 
         if (loading) return;
 
         try {
+
             setLoading(true);
 
             const { data } = await api.post(
@@ -51,16 +57,22 @@ function Login() {
             });
 
         } catch (error) {
+
             alert(
                 error?.response?.data?.message ||
                 "Login failed."
             );
+
         } finally {
+
             setLoading(false);
+
         }
+
     };
 
     return (
+
         <AuthLayout>
 
             <AuthHeader
@@ -80,11 +92,12 @@ function Login() {
                         icon={Phone}
                         name="mobile"
                         type="tel"
+                        inputMode="numeric"
+                        autoComplete="tel"
                         placeholder="Enter mobile number"
                         value={formData.mobile}
                         onChange={handleChange}
                         maxLength={10}
-                        autoComplete="tel"
                         required
                     />
 
@@ -102,8 +115,13 @@ function Login() {
 
                         <button
                             type="button"
-                            className=" text-sm font-medium text-[#7F9E2F] trans hover:text-[#5F7A20]
-              "
+                            className="
+                                text-sm
+                                font-medium
+                                text-[#7F9E2F]
+                                transition-colors
+                                hover:text-[#5F7A20]
+                            "
                         >
                             Forgot Password?
                         </button>
@@ -132,7 +150,9 @@ function Login() {
             </AuthCard>
 
         </AuthLayout>
+
     );
+
 }
 
 export default Login;

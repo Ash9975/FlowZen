@@ -3,13 +3,12 @@ import { motion } from "framer-motion";
 import {
   Sparkles,
   ArrowRight,
-  Play,
   Star,
 } from "lucide-react";
 
-import {PhoneFrame} from "./PhoneFrame";
-import {PackingScreen} from "./PackingScreen";
-import {Reveal} from "./Reveal";
+import { PhoneFrame } from "./PhoneFrame";
+import { PackingScreen } from "./PackingScreen";
+import { Reveal } from "./Reveal";
 
 function Hero() {
   return (
@@ -77,19 +76,68 @@ function Hero() {
 
                 <Link
                   to="/register"
-                  className="inline-flex items-center justify-center gap-2 rounded-full bg-[#86B02A] px-8 py-4 font-semibold text-white transition hover:scale-105"
+                  className="
+            inline-flex
+            items-center
+            justify-center
+            gap-2
+
+            rounded-full
+
+            bg-[#86B02A]
+
+            px-8
+            py-4
+
+            font-semibold
+            text-white
+
+            transition-all
+            duration-300
+
+            hover:scale-[1.02]
+            hover:bg-[#769C24]
+
+            active:scale-95
+        "
                 >
-                  Start Free
+                  Get Started Free
+
                   <ArrowRight size={18} />
+
                 </Link>
 
-                <a
-                  href="#how-it-works"
-                  className="inline-flex items-center justify-center gap-2 rounded-full border border-[#C0E94E] bg-white px-8 py-4 font-semibold text-[#1F2E05]"
+                <Link
+                  to="/login"
+                  className="
+            inline-flex
+            items-center
+            justify-center
+
+            rounded-full
+
+            border
+            border-[#D8E8B2]
+
+            bg-white
+
+            px-8
+            py-4
+
+            font-semibold
+
+            text-[#1F2E05]
+
+            transition-all
+            duration-300
+
+            hover:bg-[#F8FAF4]
+
+            active:scale-95
+        "
                 >
-                  <Play size={16} />
-                  Watch Demo
-                </a>
+                  Login
+                </Link>
 
               </div>
 

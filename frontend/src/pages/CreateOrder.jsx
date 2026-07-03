@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+
 import api from "../api/axios";
 
 import CreateOrderHeader from "../components/create-order/CreateOrderHeader";
@@ -10,6 +11,7 @@ import NotesInput from "../components/create-order/NotesInput";
 import CreateButton from "../components/create-order/CreateButton";
 
 function CreateOrder() {
+
   const navigate = useNavigate();
 
   const [customerName, setCustomerName] = useState("");
@@ -21,7 +23,7 @@ function CreateOrder() {
     hidden: {},
     show: {
       transition: {
-        staggerChildren: 0.12,
+        staggerChildren: 0.08,
       },
     },
   };
@@ -29,19 +31,22 @@ function CreateOrder() {
   const item = {
     hidden: {
       opacity: 0,
-      y: 20,
+      y: 8,
     },
     show: {
       opacity: 1,
       y: 0,
       transition: {
-        duration: 0.35,
+        duration: 0.2,
+        ease: "easeOut",
       },
     },
   };
 
   const handleCreateOrder = async () => {
+
     try {
+
       if (!customerName.trim()) {
         return alert("Enter customer name");
       }
@@ -78,7 +83,6 @@ function CreateOrder() {
       const orderId =
         orderRes.data.order._id;
 
-      // AI Processing
       await api.post(
         `/orders/${orderId}/process`
       );
@@ -86,6 +90,7 @@ function CreateOrder() {
       navigate(`/orders/${orderId}`);
 
     } catch (error) {
+
       console.error(error);
 
       alert(
@@ -94,78 +99,85 @@ function CreateOrder() {
       );
 
     } finally {
+
       setLoading(false);
+
     }
+
   };
 
   return (
-    <motion.div
-      initial={{
-        opacity: 0,
-        x: 25,
-      }}
-      animate={{
-        opacity: 1,
-        x: 0,
-      }}
-      transition={{
-        duration: 0.35,
-      }}
-      className="mx-auto max-w-md min-h-screen bg-white pb-28"
-    >
+
+    <div className="pb-28">
+
       <CreateOrderHeader />
 
-      <motion.div
-        initial={{
-          opacity: 0,
-          y: 20,
-        }}
-        animate={{
-          opacity: 1,
-          y: 0,
-        }}
-        transition={{
-          delay: 0.15,
-        }}
-        className="mx-5 px-8 py-6 border-1 rounded-[46px] shadow-lg"
+      <div
+        className="
+                    mx-5
+                    mt-6
+
+                    rounded-[36px]
+
+                    border
+
+                    px-8
+                    py-6
+
+                    shadow-sm
+                "
       >
+
         <motion.div
           variants={container}
           initial="hidden"
           animate="show"
         >
+
           <motion.div variants={item}>
+
             <CustomerInput
               value={customerName}
               onChange={setCustomerName}
             />
+
           </motion.div>
 
           <motion.div variants={item}>
+
             <UploadBox
               file={file}
               setFile={setFile}
             />
+
           </motion.div>
 
           <motion.div variants={item}>
+
             <NotesInput
               value={notes}
               onChange={setNotes}
             />
+
           </motion.div>
 
           <motion.div variants={item}>
+
             <CreateButton
               loading={loading}
               onClick={handleCreateOrder}
             />
-          </motion.div>
-        </motion.div>
-      </motion.div>
 
-    </motion.div>
+          </motion.div>
+
+        </motion.div>
+
+      </div>
+
+    </div>
+
   );
+
 }
 
 export default CreateOrder;

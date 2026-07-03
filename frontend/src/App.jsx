@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence } from "framer-motion";
+
 import api from "./api/axios";
 
 import SplashScreen from "./components/splash/SplashScreen";
@@ -13,38 +14,27 @@ function App() {
   }, []);
 
   const wakeBackend = async () => {
-
     const maxRetries = 12;
 
     for (let i = 0; i < maxRetries; i++) {
-
       try {
-
         await api.get("/health");
-
         break;
-
       } catch {
-
-        await new Promise(resolve =>
-          setTimeout(resolve, 1000)
-        );
-
+        await new Promise(resolve => setTimeout(resolve, 1000));
       }
-
     }
 
     setLoading(false);
-
   };
 
   return (
     <>
-      <AnimatePresence>
+      <AppRoutes />
+
+      <AnimatePresence mode="wait">
         {loading && <SplashScreen />}
       </AnimatePresence>
-
-      {!loading && <AppRoutes />}
     </>
   );
 }

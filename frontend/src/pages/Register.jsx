@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+
 import api from "../api/axios";
 
 import {
@@ -16,28 +17,29 @@ import AuthButton from "../components/auth/AuthButton";
 import AuthFooter from "../components/auth/AuthFooter";
 
 function Register() {
+
   const navigate = useNavigate();
 
-  const [loading, setLoading] =
-    useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const [formData, setFormData] =
-    useState({
-      name: "",
-      mobile: "",
-      password: "",
-      confirmPassword: "",
-    });
+  const [formData, setFormData] = useState({
+    name: "",
+    mobile: "",
+    password: "",
+    confirmPassword: "",
+  });
 
   const handleChange = (e) => {
-    setFormData((prev) => ({
+
+    setFormData(prev => ({
       ...prev,
-      [e.target.name]:
-        e.target.value,
+      [e.target.name]: e.target.value,
     }));
+
   };
 
   const handleSubmit = async (e) => {
+
     e.preventDefault();
 
     if (loading) return;
@@ -46,22 +48,23 @@ function Register() {
       formData.password !==
       formData.confirmPassword
     ) {
+
       return alert(
         "Passwords do not match."
       );
+
     }
 
     try {
+
       setLoading(true);
 
       await api.post(
         "/auth/register",
         {
           name: formData.name.trim(),
-          mobile:
-            formData.mobile.trim(),
-          password:
-            formData.password,
+          mobile: formData.mobile.trim(),
+          password: formData.password,
         }
       );
 
@@ -74,17 +77,22 @@ function Register() {
       });
 
     } catch (error) {
+
       alert(
-        error?.response?.data
-          ?.message ||
-          "Registration failed."
+        error?.response?.data?.message ||
+        "Registration failed."
       );
+
     } finally {
+
       setLoading(false);
+
     }
+
   };
 
   return (
+
     <AuthLayout>
 
       <AuthHeader
@@ -107,6 +115,7 @@ function Register() {
             placeholder="Enter your name"
             value={formData.name}
             onChange={handleChange}
+            autoComplete="name"
             required
           />
 
@@ -115,6 +124,8 @@ function Register() {
             icon={Phone}
             name="mobile"
             type="tel"
+            inputMode="numeric"
+            autoComplete="tel"
             placeholder="Enter mobile number"
             value={formData.mobile}
             onChange={handleChange}
@@ -128,6 +139,7 @@ function Register() {
             placeholder="Create password"
             value={formData.password}
             onChange={handleChange}
+            autoComplete="new-password"
             required
           />
 
@@ -135,10 +147,9 @@ function Register() {
             label="Confirm Password"
             name="confirmPassword"
             placeholder="Confirm password"
-            value={
-              formData.confirmPassword
-            }
+            value={formData.confirmPassword}
             onChange={handleChange}
+            autoComplete="new-password"
             required
           />
 
@@ -164,7 +175,9 @@ function Register() {
       </AuthCard>
 
     </AuthLayout>
+
   );
+
 }
 
 export default Register;

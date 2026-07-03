@@ -8,18 +8,37 @@ import CTA from "../components/landing/CTA";
 import Footer from "../components/landing/Footer";
 
 function Landing() {
+
   return (
-    <div className="min-h-screen bg-background overflow-x-hidden">
+
+    <main
+      className="
+                overflow-x-hidden
+                scroll-smooth
+                bg-background
+            "
+    >
+
       <Navbar />
+
       <Hero />
+
       <HowItWorks />
+
       <Features />
-      <ProblemSolution/>
+
+      <ProblemSolution />
+
       <Testimonials />
+
       <CTA />
+
       <Footer />
-    </div>
+
+    </main>
+
   );
+
 }
 
 export default Landing;
