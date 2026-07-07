@@ -10,17 +10,24 @@ export const AuthProvider = ({ children }) => {
     useState(true);
 
   const checkAuth = async () => {
+
     try {
+
       const res =
         await api.get("/auth/me");
 
       setUser(res.data.user);
 
-    } catch (error) {
+    } catch {
+
       setUser(null);
+
     } finally {
+
       setLoading(false);
+
     }
+
   };
 
   useEffect(() => {

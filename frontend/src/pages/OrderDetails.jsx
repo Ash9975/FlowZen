@@ -1,7 +1,9 @@
-import { useEffect, useState, useCallback } from "react";
+import { useState } from "react";
 import { useParams } from "react-router-dom";
 
-import api from "../api/axios";
+import { useOrder } from "../hooks/useOrder";
+import { useToggleChecklist } from "../hooks/useToggleChecklist";
+import { useCompleteOrder } from "../hooks/useCompleteOrder";
 
 import OrderHeader from "../components/order-details/OrderHeader";
 import ProgressCard from "../components/order-details/ProgressCard";
@@ -11,77 +13,44 @@ import CompleteOrderButton from "../components/order-details/CompleteOrderButton
 import EmptyChecklist from "../components/order-details/EmptyChecklist";
 import CompletionCard from "../components/order-details/CompletionCard";
 
+import {
+  showSuccess,
+  showError,
+} from "../lib/toast";
+
 function OrderDetails() {
 
   const { id } = useParams();
 
-  const [order, setOrder] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
+  const {
+    data: order,
+    isLoading,
+    isError,
+    error,
+  } = useOrder(id);
+
   const [showCompletion, setShowCompletion] = useState(false);
 
-  const fetchOrder = useCallback(async () => {
+  const toggleChecklistMutation = useToggleChecklist(id);
+
+  const completeOrderMutation = useCompleteOrder(id);
+
+  const toggleChecklist = async (itemId) => {
+
+    if (toggleChecklistMutation.isPending) return;
 
     try {
 
-      setLoading(true);
-
-      const { data } = await api.get(`/orders/${id}`);
-
-      setOrder(data.order);
+      await toggleChecklistMutation.mutateAsync(itemId);
 
     } catch (err) {
 
       console.error(err);
 
-    } finally {
-
-      setLoading(false);
-
-    }
-
-  }, [id]);
-
-  useEffect(() => {
-
-    fetchOrder();
-
-  }, [fetchOrder]);
-
-  const toggleChecklist = async (itemId) => {
-
-    if (saving) return;
-
-    try {
-
-      setSaving(true);
-
-      const { data } = await api.patch(
-        `/checklists/${itemId}/toggle`
+      showError(
+        err?.response?.data?.message ||
+        "Failed to update checklist."
       );
-
-      setOrder(prev => ({
-        ...prev,
-
-        progress: data.order.progress,
-        completedItems: data.order.completedItems,
-        totalItems: data.order.totalItems,
-        status: data.order.status,
-
-        checklist: prev.checklist.map(item =>
-          item._id === itemId
-            ? data.item
-            : item
-        ),
-      }));
-
-    } catch (err) {
-
-      console.log(err.response?.data);
-
-    } finally {
-
-      setSaving(false);
 
     }
 
@@ -89,20 +58,22 @@ function OrderDetails() {
 
   const handleCompleteOrder = async () => {
 
+    if (completeOrderMutation.isPending) return;
+
     try {
 
-      const { data } = await api.patch(
-        `/orders/${id}/complete`
-      );
+      await completeOrderMutation.mutateAsync();
 
-      setOrder(data.order);
+      showSuccess(
+        "Order completed successfully."
+      );
 
       setShowCompletion(true);
 
     } catch (err) {
 
-      alert(
-        err.response?.data?.message ||
+      showError(
+        err?.response?.data?.message ||
         "Unable to complete order."
       );
 
@@ -110,7 +81,7 @@ function OrderDetails() {
 
   };
 
-  if (loading) {
+  if (isLoading) {
 
     return (
 
@@ -137,6 +108,30 @@ function OrderDetails() {
 
   }
 
+  if (isError) {
+
+    return (
+
+      <div className="flex h-[70vh] items-center justify-center">
+
+        <div className="text-center">
+
+          <h2 className="text-lg font-semibold">
+            Failed to load order
+          </h2>
+
+          <p className="mt-2 text-sm text-gray-500">
+            {error.message}
+          </p>
+
+        </div>
+
+      </div>
+
+    );
+
+  }
+
   if (!order) {
 
     return (
@@ -144,9 +139,7 @@ function OrderDetails() {
       <div className="flex h-[70vh] items-center justify-center">
 
         <p className="text-gray-500">
-
           Order not found.
-
         </p>
 
       </div>
@@ -200,63 +193,59 @@ function OrderDetails() {
         notes={order.notes}
       />
 
-      {
-        !order.checklist || order.checklist.length === 0 ? (
+      {!order.checklist || order.checklist.length === 0 ? (
 
-          <EmptyChecklist />
+        <EmptyChecklist />
 
-        ) : (
+      ) : (
 
-          <ChecklistList
-            checklist={order.checklist}
-            onToggle={toggleChecklist}
-            readOnly={order.status === "completed"}
-          />
+        <ChecklistList
+          checklist={order.checklist}
+          onToggle={toggleChecklist}
+          readOnly={
+            order.status === "completed" ||
+            toggleChecklistMutation.isPending
+          }
+        />
 
-        )
-      }
+      )}
 
-      {
-        order.status !== "completed" ? (
+      {order.status !== "completed" ? (
 
-          <CompleteOrderButton
-            disabled={!canComplete}
-            onComplete={handleCompleteOrder}
-          />
+        <CompleteOrderButton
+          disabled={
+            !canComplete ||
+            completeOrderMutation.isPending
+          }
+          onComplete={handleCompleteOrder}
+        />
 
-        ) : (
+      ) : (
 
-          <div className="mx-5 mt-8 rounded-2xl border border-green-200 bg-green-50 p-5 text-center shadow-sm">
+        <div className="mx-5 mt-8 rounded-2xl border border-green-200 bg-green-50 p-5 text-center shadow-sm">
 
-            <h3 className="text-lg font-bold text-green-700">
+          <h3 className="text-lg font-bold text-green-700">
+            Order Completed
+          </h3>
 
-              ✅ Order Completed
+          <p className="mt-2 text-sm text-green-600">
+            This order is now read-only.
+          </p>
 
-            </h3>
+        </div>
 
-            <p className="mt-2 text-sm text-green-600">
+      )}
 
-              This order is now read-only.
+      {showCompletion && (
 
-            </p>
+        <CompletionCard
+          customerName={order.customerName}
+          completedItems={order.completedItems}
+          totalItems={order.totalItems}
+          packedTime={getPackingTime()}
+        />
 
-          </div>
-
-        )
-      }
-
-      {
-        showCompletion && (
-
-          <CompletionCard
-            customerName={order.customerName}
-            completedItems={order.completedItems}
-            totalItems={order.totalItems}
-            packedTime={getPackingTime()}
-          />
-
-        )
-      }
+      )}
 
     </div>
 

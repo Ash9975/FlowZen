@@ -10,7 +10,7 @@ import RecentOrdersSkeleton from "../components/dashboard/RecentOrdersSkeleton";
 import {
     useDashboardStats,
     useRecentOrders,
-} from "../hooks/useDashboard";
+} from "../hooks/useDashboard.js";
 
 function Dashboard() {
 
@@ -54,7 +54,7 @@ function Dashboard() {
 
     if (statsError || ordersError) {
         return (
-            <div className="flex h-[60vh] items-center justify-center text-center">
+            <div className="flex h-[60vh] items-center justify-center px-6 text-center">
                 <div>
                     <h2 className="text-xl font-bold">
                         Something went wrong
@@ -70,7 +70,6 @@ function Dashboard() {
     }
 
     return (
-
         <div className="px-6 pt-8 pb-28">
 
             <motion.div
@@ -102,7 +101,6 @@ function Dashboard() {
             </motion.div>
 
         </div>
-
     );
 
 }

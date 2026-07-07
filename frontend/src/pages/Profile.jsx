@@ -2,8 +2,8 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 
-import api from "../api/axios";
 import { useProfile } from "../hooks/useProfile";
+import { useLogout } from "../hooks/useLogout";
 
 import ProfileHero from "../components/profile/ProfileHero";
 import UserInfoCard from "../components/profile/UserInfoCard";
@@ -12,10 +12,16 @@ import LogoutButton from "../components/profile/LogoutButton";
 import LogoutModal from "../components/profile/LogoutModal";
 import ProfileSkeleton from "../components/profile/ProfileSkeleton";
 
+import {
+    showSuccess,
+    showError,
+} from "../lib/toast";
+
 function Profile() {
 
+    const navigate = useNavigate();
+
     const [logoutOpen, setLogoutOpen] = useState(false);
-    const [logoutLoading, setLogoutLoading] = useState(false);
 
     const {
         data: user,
@@ -24,15 +30,19 @@ function Profile() {
         error,
     } = useProfile();
 
-    const navigate = useNavigate();
+    const logoutMutation = useLogout();
 
     const handleLogout = async () => {
 
+        if (logoutMutation.isPending) return;
+
         try {
 
-            setLogoutLoading(true);
+            await logoutMutation.mutateAsync();
 
-            await api.post("/auth/logout");
+            showSuccess(
+                "Logged out successfully."
+            );
 
             setLogoutOpen(false);
 
@@ -44,14 +54,10 @@ function Profile() {
 
             console.error(error);
 
-            alert(
+            showError(
                 error?.response?.data?.message ||
                 "Logout failed."
             );
-
-        } finally {
-
-            setLogoutLoading(false);
 
         }
 
@@ -109,62 +115,58 @@ function Profile() {
 
         <>
 
-            {
+            {isLoading ? (
 
-                isLoading ? (
+                <ProfileSkeleton />
 
-                    <ProfileSkeleton />
+            ) : (
 
-                ) : (
+                <div className="px-6 pt-8 pb-28">
 
-                    <div className="px-6 pt-8 pb-28">
+                    <motion.div
+                        variants={container}
+                        initial="hidden"
+                        animate="show"
+                        className="space-y-6"
+                    >
 
-                        <motion.div
-                            variants={container}
-                            initial="hidden"
-                            animate="show"
-                            className="space-y-6"
-                        >
+                        <motion.div variants={item}>
 
-                            <motion.div variants={item}>
-
-                                <ProfileHero user={user} />
-
-                            </motion.div>
-
-                            <motion.div variants={item}>
-
-                                <UserInfoCard user={user} />
-
-                            </motion.div>
-
-                            <motion.div variants={item}>
-
-                                <QuickActions />
-
-                            </motion.div>
-
-                            <motion.div variants={item}>
-
-                                <LogoutButton
-                                    onLogout={() =>
-                                        setLogoutOpen(true)
-                                    }
-                                />
-
-                            </motion.div>
+                            <ProfileHero user={user} />
 
                         </motion.div>
 
-                    </div>
+                        <motion.div variants={item}>
 
-                )
+                            <UserInfoCard user={user} />
 
-            }
+                        </motion.div>
+
+                        <motion.div variants={item}>
+
+                            <QuickActions />
+
+                        </motion.div>
+
+                        <motion.div variants={item}>
+
+                            <LogoutButton
+                                onLogout={() =>
+                                    setLogoutOpen(true)
+                                }
+                            />
+
+                        </motion.div>
+
+                    </motion.div>
+
+                </div>
+
+            )}
 
             <LogoutModal
                 open={logoutOpen}
-                loading={logoutLoading}
+                loading={logoutMutation.isPending}
                 onClose={() => setLogoutOpen(false)}
                 onConfirm={handleLogout}
             />

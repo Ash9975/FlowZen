@@ -23,8 +23,15 @@ export const queryKeys = {
             id,
         ],
 
+        checklist: id => [
+            "orders",
+            id,
+            "checklist",
+        ],
+
     },
     profile: ["profile"],
+    auth: ["auth", "me"],
     activity: ["activity"],
 
 };

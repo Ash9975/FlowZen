@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import api from "../api/axios";
+import { useRegister } from "../hooks/useRegister";
 
 import {
   User,
@@ -16,11 +16,16 @@ import PasswordInput from "../components/auth/PasswordInput";
 import AuthButton from "../components/auth/AuthButton";
 import AuthFooter from "../components/auth/AuthFooter";
 
+import {
+  showSuccess,
+  showError,
+} from "../lib/toast";
+
 function Register() {
 
   const navigate = useNavigate();
 
-  const [loading, setLoading] = useState(false);
+  const registerMutation = useRegister();
 
   const [formData, setFormData] = useState({
     name: "",
@@ -42,14 +47,14 @@ function Register() {
 
     e.preventDefault();
 
-    if (loading) return;
+    if (registerMutation.isPending) return;
 
     if (
       formData.password !==
       formData.confirmPassword
     ) {
 
-      return alert(
+      return showError(
         "Passwords do not match."
       );
 
@@ -57,18 +62,13 @@ function Register() {
 
     try {
 
-      setLoading(true);
+      await registerMutation.mutateAsync({
+        name: formData.name.trim(),
+        mobile: formData.mobile.trim(),
+        password: formData.password,
+      });
 
-      await api.post(
-        "/auth/register",
-        {
-          name: formData.name.trim(),
-          mobile: formData.mobile.trim(),
-          password: formData.password,
-        }
-      );
-
-      alert(
+      showSuccess(
         "Account created successfully."
       );
 
@@ -78,14 +78,10 @@ function Register() {
 
     } catch (error) {
 
-      alert(
+      showError(
         error?.response?.data?.message ||
         "Registration failed."
       );
-
-    } finally {
-
-      setLoading(false);
 
     }
 
@@ -156,7 +152,7 @@ function Register() {
           <div className="pt-2">
 
             <AuthButton
-              loading={loading}
+              loading={registerMutation.isPending}
               loadingText="Creating Account..."
             >
               Create Account

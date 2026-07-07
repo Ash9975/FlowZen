@@ -2,53 +2,54 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 
-import api from "../api/axios";
+import { useChecklist } from "../hooks/useChecklist";
+import { useCreateChecklistItem } from "../hooks/useCreateChecklistItem";
+import { useUpdateChecklistItem } from "../hooks/useUpdateChecklistItem";
+import { useDeleteChecklistItem } from "../hooks/useDeleteChecklistItem";
 
 import EditHeader from "../components/edit-checklist/EditHeader";
 import EditableItemCard from "../components/edit-checklist/EditableItemCard";
 import AddItemButton from "../components/edit-checklist/AddItemButton";
 import SaveBar from "../components/edit-checklist/SaveBar";
 
+import {
+    showSuccess,
+    showError,
+} from "../lib/toast";
+
 function EditChecklist() {
 
     const { id } = useParams();
+
     const navigate = useNavigate();
+
+    const {
+        data: fetchedChecklist = [],
+        isLoading,
+        isError,
+        error,
+    } = useChecklist(id);
+
+    const createMutation = useCreateChecklistItem(id);
+    const updateMutation = useUpdateChecklistItem(id);
+    const deleteMutation = useDeleteChecklistItem(id);
 
     const [checklist, setChecklist] = useState([]);
     const [originalChecklist, setOriginalChecklist] = useState([]);
     const [deletedItems, setDeletedItems] = useState([]);
 
-    const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
 
     useEffect(() => {
-        fetchChecklist();
-    }, []);
 
-    const fetchChecklist = async () => {
+        if (fetchedChecklist.length > 0) {
 
-        try {
-
-            setLoading(true);
-
-            const { data } = await api.get(
-                `/checklists/${id}`
-            );
-
-            setChecklist(data.items);
-            setOriginalChecklist(data.items);
-
-        } catch (err) {
-
-            console.log(err);
-
-        } finally {
-
-            setLoading(false);
+            setChecklist(fetchedChecklist);
+            setOriginalChecklist(fetchedChecklist);
 
         }
 
-    };
+    }, [fetchedChecklist]);
 
     const handleItemChange = (
         itemId,
@@ -126,14 +127,16 @@ function EditChecklist() {
 
             const requests = [];
 
+            // Delete removed items
             for (const itemId of deletedItems) {
 
                 requests.push(
-                    api.delete(`/checklists/${itemId}`)
+                    deleteMutation.mutateAsync(itemId)
                 );
 
             }
 
+            // Create & Update items
             for (const item of checklist) {
 
                 const payload = {
@@ -152,10 +155,7 @@ function EditChecklist() {
                 if (item.isNew) {
 
                     requests.push(
-                        api.post(
-                            `/checklists/${id}`,
-                            payload
-                        )
+                        createMutation.mutateAsync(payload)
                     );
 
                     continue;
@@ -177,10 +177,15 @@ function EditChecklist() {
                 if (changed) {
 
                     requests.push(
-                        api.put(
-                            `/checklists/${item._id}`,
-                            payload
-                        )
+
+                        updateMutation.mutateAsync({
+
+                            itemId: item._id,
+
+                            payload,
+
+                        })
+
                     );
 
                 }
@@ -188,6 +193,10 @@ function EditChecklist() {
             }
 
             await Promise.all(requests);
+
+            showSuccess(
+                "Checklist updated successfully."
+            );
 
             navigate(`/orders/${id}`, {
                 replace: true,
@@ -197,7 +206,7 @@ function EditChecklist() {
 
             console.error(err);
 
-            alert(
+            showError(
                 err?.response?.data?.message ||
                 "Failed to save checklist."
             );
@@ -210,7 +219,31 @@ function EditChecklist() {
 
     }
 
-    if (loading) {
+    if (isError) {
+
+        return (
+
+            <div className="flex h-[70vh] items-center justify-center">
+
+                <div className="text-center">
+
+                    <h2 className="text-lg font-semibold">
+                        Failed to load checklist
+                    </h2>
+
+                    <p className="mt-2 text-sm text-gray-500">
+                        {error.message}
+                    </p>
+
+                </div>
+
+            </div>
+
+        );
+
+    }
+
+    if (isLoading) {
 
         return (
 

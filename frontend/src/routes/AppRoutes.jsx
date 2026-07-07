@@ -1,79 +1,114 @@
+import { lazy, Suspense } from "react";
 import { Routes, Route } from "react-router-dom";
 
-import Landing from "../pages/Landing";
-import Login from "../pages/Login";
-import Register from "../pages/Register";
-
-import Dashboard from "../pages/Dashboard";
-import Orders from "../pages/Orders";
-import Activity from "../pages/Activity";
-import Profile from "../pages/Profile";
-import CreateOrder from "../pages/CreateOrder";
-import OrderDetails from "../pages/OrderDetails";
-import EditChecklist from "../pages/EditChecklist";
-
+import PublicRoute from "./PublicRoute";
 import ProtectedRoute from "./ProtectedRoute";
+
 import MainLayout from "../layouts/MainLayout";
+import PageLoader from "../components/common/PageLoader";
+
+const Landing = lazy(() => import("../pages/Landing"));
+const Login = lazy(() => import("../pages/Login"));
+const Register = lazy(() => import("../pages/Register"));
+
+const Dashboard = lazy(() => import("../pages/Dashboard"));
+const Orders = lazy(() => import("../pages/Orders"));
+const Activity = lazy(() => import("../pages/Activity"));
+const Profile = lazy(() => import("../pages/Profile"));
+const CreateOrder = lazy(() => import("../pages/CreateOrder"));
+const OrderDetails = lazy(() => import("../pages/OrderDetails"));
+const EditChecklist = lazy(() => import("../pages/EditChecklist"));
 
 function AppRoutes() {
+
     return (
-        <Routes>
 
-            {/* Public Routes */}
+        <Suspense fallback={<PageLoader />}>
 
-            <Route path="/" element={<Landing />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
+            <Routes>
 
-            {/* Protected Routes */}
-
-            <Route
-                element={
-                    <ProtectedRoute>
-                        <MainLayout />
-                    </ProtectedRoute>
-                }
-            >
+                {/* Public Routes */}
 
                 <Route
-                    path="/dashboard"
-                    element={<Dashboard />}
+                    path="/"
+                    element={
+                        <PublicRoute>
+                            <Landing />
+                        </PublicRoute>
+                    }
                 />
 
                 <Route
-                    path="/orders"
-                    element={<Orders />}
+                    path="/login"
+                    element={
+                        <PublicRoute>
+                            <Login />
+                        </PublicRoute>
+                    }
                 />
 
                 <Route
-                    path="/activity"
-                    element={<Activity />}
+                    path="/register"
+                    element={
+                        <PublicRoute>
+                            <Register />
+                        </PublicRoute>
+                    }
                 />
+
+                {/* Protected Routes */}
 
                 <Route
-                    path="/profile"
-                    element={<Profile />}
-                />
+                    element={
+                        <ProtectedRoute>
+                            <MainLayout />
+                        </ProtectedRoute>
+                    }
+                >
 
-                <Route
-                    path="/create"
-                    element={<CreateOrder />}
-                />
+                    <Route
+                        path="/dashboard"
+                        element={<Dashboard />}
+                    />
 
-                <Route
-                    path="/orders/:id"
-                    element={<OrderDetails />}
-                />
+                    <Route
+                        path="/orders"
+                        element={<Orders />}
+                    />
 
-                <Route
-                    path="/orders/:id/edit"
-                    element={<EditChecklist />}
-                />
+                    <Route
+                        path="/activity"
+                        element={<Activity />}
+                    />
 
-            </Route>
+                    <Route
+                        path="/profile"
+                        element={<Profile />}
+                    />
 
-        </Routes>
+                    <Route
+                        path="/create"
+                        element={<CreateOrder />}
+                    />
+
+                    <Route
+                        path="/orders/:id"
+                        element={<OrderDetails />}
+                    />
+
+                    <Route
+                        path="/orders/:id/edit"
+                        element={<EditChecklist />}
+                    />
+
+                </Route>
+
+            </Routes>
+
+        </Suspense>
+
     );
+
 }
 
 export default AppRoutes;

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 
-import api from "../api/axios";
+import { useCreateOrder } from "../hooks/useCreateOrder";
 
 import CreateOrderHeader from "../components/create-order/CreateOrderHeader";
 import CustomerInput from "../components/create-order/CustomerInput";
@@ -10,14 +10,20 @@ import UploadBox from "../components/create-order/UploadBox";
 import NotesInput from "../components/create-order/NotesInput";
 import CreateButton from "../components/create-order/CreateButton";
 
+import {
+  showSuccess,
+  showError,
+} from "../lib/toast";
+
 function CreateOrder() {
 
   const navigate = useNavigate();
 
+  const createOrderMutation = useCreateOrder();
+
   const [customerName, setCustomerName] = useState("");
   const [notes, setNotes] = useState("");
   const [file, setFile] = useState(null);
-  const [loading, setLoading] = useState(false);
 
   const container = {
     hidden: {},
@@ -45,23 +51,23 @@ function CreateOrder() {
 
   const handleCreateOrder = async () => {
 
+    if (createOrderMutation.isPending) return;
+
+    if (!customerName.trim()) {
+      return showError("Enter customer name");
+    }
+
+    if (!file) {
+      return showError("Upload an order image");
+    }
+
     try {
-
-      if (!customerName.trim()) {
-        return alert("Enter customer name");
-      }
-
-      if (!file) {
-        return alert("Upload order image");
-      }
-
-      setLoading(true);
 
       const formData = new FormData();
 
       formData.append(
         "customerName",
-        customerName
+        customerName.trim()
       );
 
       formData.append(
@@ -69,38 +75,30 @@ function CreateOrder() {
         file
       );
 
-      const orderRes = await api.post(
-        "/orders",
-        formData,
-        {
-          headers: {
-            "Content-Type":
-              "multipart/form-data",
-          },
-        }
+      formData.append(
+        "notes",
+        notes.trim()
       );
 
-      const orderId =
-        orderRes.data.order._id;
+      const data =
+        await createOrderMutation.mutateAsync(
+          formData
+        );
 
-      await api.post(
-        `/orders/${orderId}/process`
+      showSuccess("Order created successfully.");
+
+      navigate(
+        `/orders/${data.order._id}`
       );
-
-      navigate(`/orders/${orderId}`);
 
     } catch (error) {
 
       console.error(error);
 
-      alert(
+      showError(
         error?.response?.data?.message ||
-        "Failed to create order"
+        "Failed to create order."
       );
-
-    } finally {
-
-      setLoading(false);
 
     }
 
@@ -114,18 +112,14 @@ function CreateOrder() {
 
       <div
         className="
-                    mx-5
-                    mt-6
-
-                    rounded-[36px]
-
-                    border
-
-                    px-8
-                    py-6
-
-                    shadow-sm
-                "
+          mx-5
+          mt-6
+          rounded-[36px]
+          border
+          px-8
+          py-6
+          shadow-sm
+        "
       >
 
         <motion.div
@@ -164,7 +158,7 @@ function CreateOrder() {
           <motion.div variants={item}>
 
             <CreateButton
-              loading={loading}
+              loading={createOrderMutation.isPending}
               onClick={handleCreateOrder}
             />
 

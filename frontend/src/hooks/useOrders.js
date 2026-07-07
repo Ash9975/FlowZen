@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { getOrders } from "../api/order.js";
-import { queryKeys } from "../lib/queryKeys";
+import { queryKeys } from "../lib/queryKeys.js";
 
 export function useOrders(search, status, page = 1) {
 

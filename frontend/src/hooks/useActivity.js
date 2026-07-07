@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 
-import { getActivities } from "../api/activity";
-import { queryKeys } from "../lib/queryKeys";
+import { getActivities } from "../api/activity.js";
+import { queryKeys } from "../lib/queryKeys.js";
 
 export function useActivity() {
 

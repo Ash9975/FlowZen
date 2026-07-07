@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import api from "../api/axios";
 import { useAuth } from "../context/AuthContext";
+import { useLogin } from "../hooks/useLogin";
 
 import { Phone } from "lucide-react";
 
@@ -14,12 +14,17 @@ import PasswordInput from "../components/auth/PasswordInput";
 import AuthButton from "../components/auth/AuthButton";
 import AuthFooter from "../components/auth/AuthFooter";
 
+import {
+    showSuccess,
+    showError,
+} from "../lib/toast";
+
 function Login() {
 
     const navigate = useNavigate();
     const { setUser } = useAuth();
 
-    const [loading, setLoading] = useState(false);
+    const loginMutation = useLogin();
 
     const [formData, setFormData] = useState({
         mobile: "",
@@ -39,18 +44,20 @@ function Login() {
 
         e.preventDefault();
 
-        if (loading) return;
+        if (loginMutation.isPending) return;
 
         try {
 
-            setLoading(true);
-
-            const { data } = await api.post(
-                "/auth/login",
-                formData
-            );
-
+            const data = await loginMutation.mutateAsync({
+                mobile: formData.mobile.trim(),
+                password: formData.password,
+            });
+            
             setUser(data.user);
+
+            showSuccess(
+                `Welcome back, ${data.user.name}!`
+            );
 
             navigate("/dashboard", {
                 replace: true,
@@ -58,14 +65,10 @@ function Login() {
 
         } catch (error) {
 
-            alert(
+            showError(
                 error?.response?.data?.message ||
                 "Login failed."
             );
-
-        } finally {
-
-            setLoading(false);
 
         }
 
@@ -131,7 +134,7 @@ function Login() {
                     <div className="pt-2">
 
                         <AuthButton
-                            loading={loading}
+                            loading={loginMutation.isPending}
                             loadingText="Signing In..."
                         >
                             Sign In
