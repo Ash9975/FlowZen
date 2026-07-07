@@ -4,7 +4,10 @@ import { AnimatePresence } from "framer-motion";
 import api from "./api/axios";
 
 import SplashScreen from "./components/splash/SplashScreen";
+import NetworkStatus from "./components/common/NetworkStatus";
 import AppRoutes from "./routes/AppRoutes";
+
+import InstallPrompt from "./components/common/InstallPrompt";
 
 function App() {
   const [loading, setLoading] = useState(true);
@@ -30,6 +33,10 @@ function App() {
 
   return (
     <>
+      <NetworkStatus />
+
+      <InstallPrompt />
+
       <AppRoutes />
 
       <AnimatePresence mode="wait">

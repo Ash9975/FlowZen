@@ -14,6 +14,8 @@ import { AuthProvider } from "./context/AuthContext";
 
 import queryClient from "./lib/queryClient";
 import ToastProvider from "./components/common/ToastProvider";
+import { ErrorBoundary } from "react-error-boundary";
+import ErrorFallback from "./components/common/ErrorFallback";
 
 registerSW({
   immediate: true,
@@ -22,16 +24,22 @@ registerSW({
 ReactDOM.createRoot(document.getElementById("root")).render(
 
   <QueryClientProvider client={queryClient}>
+    <ErrorBoundary
+      FallbackComponent={ErrorFallback}
+      onReset={() => {
+        window.location.reload();
+      }}
+    >
+      <BrowserRouter>
 
-    <BrowserRouter>
+        <AuthProvider>
 
-      <AuthProvider>
+          <App />
 
-        <App />
+        </AuthProvider>
 
-      </AuthProvider>
-
-    </BrowserRouter>
+      </BrowserRouter>
+    </ErrorBoundary>
 
     <ToastProvider />
 

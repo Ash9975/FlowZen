@@ -6,11 +6,12 @@ import RecentOrders from "../components/dashboard/RecentOrders";
 
 import StatsSkeleton from "../components/dashboard/StatsSkeleton";
 import RecentOrdersSkeleton from "../components/dashboard/RecentOrdersSkeleton";
+import QueryErrorState from "../components/common/QueryErrorState";
 
 import {
     useDashboardStats,
     useRecentOrders,
-} from "../hooks/useDashboard.js";
+} from "../hooks/useDashboard";
 
 function Dashboard() {
 
@@ -19,6 +20,8 @@ function Dashboard() {
         isLoading: statsLoading,
         isError: statsError,
         error: statsErrorMessage,
+        refetch: refetchStats,
+        isRefetching: statsRefetching,
     } = useDashboardStats();
 
     const {
@@ -26,6 +29,8 @@ function Dashboard() {
         isLoading: ordersLoading,
         isError: ordersError,
         error: ordersErrorMessage,
+        refetch: refetchOrders,
+        isRefetching: ordersRefetching,
     } = useRecentOrders();
 
     const container = {
@@ -53,23 +58,40 @@ function Dashboard() {
     };
 
     if (statsError || ordersError) {
-        return (
-            <div className="flex h-[60vh] items-center justify-center px-6 text-center">
-                <div>
-                    <h2 className="text-xl font-bold">
-                        Something went wrong
-                    </h2>
 
-                    <p className="mt-2 text-sm text-gray-500">
-                        {statsErrorMessage?.message ||
-                            ordersErrorMessage?.message}
-                    </p>
-                </div>
-            </div>
+        return (
+
+            <QueryErrorState
+
+                title="Failed to load dashboard"
+
+                message={
+                    statsErrorMessage?.message ||
+                    ordersErrorMessage?.message ||
+                    "Something went wrong."
+                }
+
+                loading={
+                    statsRefetching ||
+                    ordersRefetching
+                }
+
+                onRetry={() => {
+
+                    refetchStats();
+
+                    refetchOrders();
+
+                }}
+
+            />
+
         );
+
     }
 
     return (
+
         <div className="px-6 pt-8 pb-28">
 
             <motion.div
@@ -79,28 +101,43 @@ function Dashboard() {
             >
 
                 <motion.div variants={item}>
+
                     <DashboardHeader />
+
                 </motion.div>
 
                 <motion.div variants={item}>
+
                     {statsLoading ? (
+
                         <StatsSkeleton />
+
                     ) : (
+
                         <StatsCards stats={stats} />
+
                     )}
+
                 </motion.div>
 
                 <motion.div variants={item}>
+
                     {ordersLoading ? (
+
                         <RecentOrdersSkeleton />
+
                     ) : (
+
                         <RecentOrders orders={orders} />
+
                     )}
+
                 </motion.div>
 
             </motion.div>
 
         </div>
+
     );
 
 }

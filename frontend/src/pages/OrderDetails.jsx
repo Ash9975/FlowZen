@@ -12,7 +12,7 @@ import ChecklistList from "../components/order-details/ChecklistList";
 import CompleteOrderButton from "../components/order-details/CompleteOrderButton";
 import EmptyChecklist from "../components/order-details/EmptyChecklist";
 import CompletionCard from "../components/order-details/CompletionCard";
-
+import QueryErrorState from "../components/common/QueryErrorState";
 import {
   showSuccess,
   showError,
@@ -112,25 +112,16 @@ function OrderDetails() {
 
     return (
 
-      <div className="flex h-[70vh] items-center justify-center">
-
-        <div className="text-center">
-
-          <h2 className="text-lg font-semibold">
-            Failed to load order
-          </h2>
-
-          <p className="mt-2 text-sm text-gray-500">
-            {error.message}
-          </p>
-
-        </div>
-
-      </div>
+        <QueryErrorState
+            title="Failed to load order details."
+            message={error.message}
+            onRetry={refetch}
+            loading={isRefetching}
+        />
 
     );
 
-  }
+}
 
   if (!order) {
 

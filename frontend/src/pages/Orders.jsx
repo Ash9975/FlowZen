@@ -8,7 +8,7 @@ import FilterTabs from "../components/orders/FilterTabs";
 import OrdersList from "../components/orders/OrdersList";
 import EmptyOrders from "../components/orders/EmptyOrders";
 import OrdersSkeleton from "../components/orders/OrdersSkeleton";
-
+import QueryErrorState from "../components/common/QueryErrorState";
 function Orders() {
 
     const [search, setSearch] = useState("");
@@ -24,20 +24,19 @@ function Orders() {
     const orders = data?.orders ?? [];
 
     if (isError) {
-        return (
-            <div className="flex h-[70vh] items-center justify-center">
-                <div className="text-center">
-                    <h2 className="text-lg font-semibold">
-                        Failed to load orders
-                    </h2>
 
-                    <p className="mt-2 text-sm text-gray-500">
-                        {error.message}
-                    </p>
-                </div>
-            </div>
-        );
-    }
+    return (
+
+        <QueryErrorState
+            title="Failed to load orders."
+            message={error.message}
+            onRetry={refetch}
+            loading={isRefetching}
+        />
+
+    );
+
+}
 
     return (
 

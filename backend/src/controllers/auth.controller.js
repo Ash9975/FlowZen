@@ -25,7 +25,6 @@ export const register = async (req, res) => {
             mobile,
             password: hashedPassword,
         });
-        console.log("Created User:", user);
 
         res.status(201).json({
             success: true,
@@ -70,7 +69,6 @@ export const login = async (req, res) => {
         }
 
         const token = generateToken(user._id);
-        console.log("Generated Token:", token);
         console.log("NODE_ENV:", process.env.NODE_ENV);
         res.cookie("token", token, {
             httpOnly: true,

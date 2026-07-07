@@ -6,7 +6,6 @@ const extractOrderItems = async (
 ) => {
 
   const imageBuffer = await downloadImage(imageUrl);
-  console.log("Buffer Size:", imageBuffer.length / 1024, "KB");
 
   const base64Image = imageBuffer.toString("base64");
 
@@ -91,7 +90,6 @@ Example Output:
       }),
       timeoutPromise,
     ]);
-  console.log("RAW GEMINI RESPONSE:");
   console.log(response.text);
 
   const cleanedResponse = response.text
@@ -99,7 +97,6 @@ Example Output:
     .replace(/```/g, "")
     .trim();
     
-  console.log("CLEANED RESPONSE:");
   console.log(cleanedResponse);
 
   return cleanedResponse;

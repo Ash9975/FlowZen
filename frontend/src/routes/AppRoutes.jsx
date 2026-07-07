@@ -18,7 +18,7 @@ const Profile = lazy(() => import("../pages/Profile"));
 const CreateOrder = lazy(() => import("../pages/CreateOrder"));
 const OrderDetails = lazy(() => import("../pages/OrderDetails"));
 const EditChecklist = lazy(() => import("../pages/EditChecklist"));
-
+const NotFound = lazy(() => import("../pages/NotFound"));
 function AppRoutes() {
 
     return (
@@ -99,6 +99,11 @@ function AppRoutes() {
                     <Route
                         path="/orders/:id/edit"
                         element={<EditChecklist />}
+                    />
+
+                    <Route
+                        path="*"
+                        element={<NotFound />}
                     />
 
                 </Route>

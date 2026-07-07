@@ -11,7 +11,7 @@ import EditHeader from "../components/edit-checklist/EditHeader";
 import EditableItemCard from "../components/edit-checklist/EditableItemCard";
 import AddItemButton from "../components/edit-checklist/AddItemButton";
 import SaveBar from "../components/edit-checklist/SaveBar";
-
+import QueryErrorState from "../components/common/QueryErrorState";
 import {
     showSuccess,
     showError,
@@ -223,21 +223,12 @@ function EditChecklist() {
 
         return (
 
-            <div className="flex h-[70vh] items-center justify-center">
-
-                <div className="text-center">
-
-                    <h2 className="text-lg font-semibold">
-                        Failed to load checklist
-                    </h2>
-
-                    <p className="mt-2 text-sm text-gray-500">
-                        {error.message}
-                    </p>
-
-                </div>
-
-            </div>
+            <QueryErrorState
+                title="Failed to load checklist"
+                message={error.message}
+                onRetry={refetch}
+                loading={isRefetching}
+            />
 
         );
 

@@ -11,7 +11,7 @@ import QuickActions from "../components/profile/QuickActions";
 import LogoutButton from "../components/profile/LogoutButton";
 import LogoutModal from "../components/profile/LogoutModal";
 import ProfileSkeleton from "../components/profile/ProfileSkeleton";
-
+import QueryErrorState from "../components/common/QueryErrorState";
 import {
     showSuccess,
     showError,
@@ -89,27 +89,18 @@ function Profile() {
 
     if (isError) {
 
-        return (
+    return (
 
-            <div className="flex h-[70vh] items-center justify-center">
+        <QueryErrorState
+            title="Failed to load profile."
+            message={error.message}
+            onRetry={refetch}
+            loading={isRefetching}
+        />
 
-                <div className="text-center">
+    );
 
-                    <h2 className="text-lg font-semibold">
-                        Failed to load profile
-                    </h2>
-
-                    <p className="mt-2 text-sm text-gray-500">
-                        {error.message}
-                    </p>
-
-                </div>
-
-            </div>
-
-        );
-
-    }
+}
 
     return (
 

@@ -7,7 +7,6 @@ function ChecklistItem({
   readOnly
 }
 ) {
-  console.log(item.itemName, readOnly);
   return (
     <motion.div
       layout
@@ -21,7 +20,6 @@ function ChecklistItem({
         duration: 0.2,
       }}
       onClick={() => {
-        console.log("Clicked", item.itemName, "readOnly:", readOnly);
 
         if (readOnly) {
           console.log("Blocked");

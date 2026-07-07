@@ -6,12 +6,6 @@ export const getOrders = async ({
     page = 1,
 }) => {
 
-    console.log("➡️ Sending params:", {
-        search,
-        status,
-        page,
-    });
-
     const { data } = await api.get("/orders", {
         params: {
             search,
@@ -19,8 +13,6 @@ export const getOrders = async ({
             page,
         },
     });
-
-    console.log("⬅️ Response:", data);
 
     return data;
 };

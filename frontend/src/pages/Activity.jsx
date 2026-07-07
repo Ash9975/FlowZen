@@ -4,7 +4,7 @@ import ActivityHeader from "../components/activity/ActivityHeader";
 import ActivityList from "../components/activity/ActivityList";
 import ActivitySkeleton from "../components/activity/ActivitySkeleton";
 import EmptyActivity from "../components/activity/EmptyActivity";
-
+import QueryErrorState from "../components/common/QueryErrorState";
 function Activity() {
 
     const {
@@ -16,19 +16,12 @@ function Activity() {
 
     if (isError) {
         return (
-            <div className="flex h-[70vh] items-center justify-center">
-                <div className="text-center">
-
-                    <h2 className="text-lg font-semibold">
-                        Failed to load activity
-                    </h2>
-
-                    <p className="mt-2 text-sm text-gray-500">
-                        {error.message}
-                    </p>
-
-                </div>
-            </div>
+           <QueryErrorState
+            title="Failed to load Activity"
+            message={error.message}
+            onRetry={refetch}
+            loading={isRefetching}
+        />
         );
     }
 
