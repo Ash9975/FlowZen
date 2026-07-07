@@ -8,7 +8,7 @@ function InstallPrompt() {
     useEffect(() => {
 
         const handleBeforeInstallPrompt = (e) => {
-
+            console.log("beforeinstallprompt fired");
             e.preventDefault();
 
             setDeferredPrompt(e);
@@ -50,7 +50,6 @@ function InstallPrompt() {
     }, []);
 
     const handleInstall = async () => {
-
         if (!deferredPrompt || installed) {
             return;
         }
@@ -78,35 +77,52 @@ function InstallPrompt() {
 
         <div
             className="
-                fixed
-                bottom-24
-                left-4
-                right-4
-                z-50
+            fixed
+            bottom-28
+            left-1/2
+            z-50
 
-                rounded-2xl
+            w-full
+            max-w-[420px]
+
+            -translate-x-1/2
+
+            px-5
+        "
+        >
+
+            <div
+                className="
+                flex
+                items-center
+                justify-between
+                gap-4
+
+                rounded-[28px]
+
+                border
+                border-[#90B137]
 
                 bg-[#7F9E2F]
 
-                p-4
+                px-5
+                py-4
 
                 text-white
 
-                shadow-xl
+                shadow-2xl
             "
-        >
+            >
 
-            <div className="flex items-center justify-between gap-4">
+                <div className="min-w-0">
 
-                <div>
-
-                    <h3 className="font-semibold">
+                    <h3 className="text-lg font-semibold">
 
                         Install FlowZen
 
                     </h3>
 
-                    <p className="text-sm text-white/80">
+                    <p className="mt-1 text-sm text-white/80">
 
                         Install the app for a faster, app-like experience.
 
@@ -119,16 +135,24 @@ function InstallPrompt() {
                     onClick={handleInstall}
 
                     className="
-                        rounded-xl
-                        bg-white
-                        px-4
-                        py-2
-                        font-semibold
-                        text-[#7F9E2F]
-                        transition
-                        hover:scale-105
-                        active:scale-95
-                    "
+                    shrink-0
+
+                    rounded-full
+
+                    bg-white
+
+                    px-6
+                    py-3
+
+                    font-semibold
+
+                    text-[#7F9E2F]
+
+                    transition-all
+
+                    hover:scale-105
+                    active:scale-95
+                "
 
                 >
 

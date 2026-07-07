@@ -8,6 +8,7 @@ import NetworkStatus from "./components/common/NetworkStatus";
 import AppRoutes from "./routes/AppRoutes";
 
 import InstallPrompt from "./components/common/InstallPrompt";
+import { useAuth } from "./context/AuthContext";
 
 function App() {
   const [loading, setLoading] = useState(true);
@@ -31,11 +32,13 @@ function App() {
     setLoading(false);
   };
 
+  const {user} = useAuth();
+  
   return (
     <>
       <NetworkStatus />
 
-      <InstallPrompt />
+      {user && <InstallPrompt />}
 
       <AppRoutes />
 
