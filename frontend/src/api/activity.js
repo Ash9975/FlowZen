@@ -1,9 +1,11 @@
 import api from "./axios";
 
-export const getActivities = async () => {
+export async function getActivities() {
 
-    const { data } = await api.get("/activity");
+    const { data } = await api.get(
+        "/activity"
+    );
 
     return data.activities;
 
-};
+}

@@ -1,23 +1,85 @@
 function ActivitySkeleton() {
-    return (
-        <div className="animate-pulse space-y-5">
 
-            {[1, 2, 3, 4, 5].map(item => (
+    return (
+
+        <div className="space-y-4 animate-pulse">
+
+            {Array.from({ length: 6 }).map((_, index) => (
 
                 <div
-                    key={item}
-                    className="flex gap-4 rounded-3xl border border-[#EEF3E3] p-5"
+
+                    key={index}
+
+                    className="
+                        flex
+                        items-start
+                        gap-3
+
+                        rounded-2xl
+
+                        border
+                        border-[#EEF3E3]
+
+                        bg-white
+
+                        p-4
+
+                        shadow-sm
+                    "
+
                 >
 
-                    <div className="h-12 w-12 rounded-2xl bg-[#EEF3E3]" />
+                    <div
+                        className="
+                            h-10
+                            w-10
+
+                            shrink-0
+
+                            rounded-xl
+
+                            bg-[#EEF3E3]
+                        "
+                    />
 
                     <div className="flex-1">
 
-                        <div className="mb-3 h-4 w-40 rounded bg-[#EEF3E3]" />
+                        <div
+                            className="
+                                h-4
+                                w-36
 
-                        <div className="mb-2 h-3 w-56 rounded bg-[#EEF3E3]" />
+                                rounded-full
 
-                        <div className="h-3 w-24 rounded bg-[#EEF3E3]" />
+                                bg-[#EEF3E3]
+                            "
+                        />
+
+                        <div
+                            className="
+                                mt-2
+
+                                h-3
+                                w-44
+
+                                rounded-full
+
+                                bg-[#EEF3E3]
+                            "
+                        />
+
+                        <div
+                            className="
+                                mt-3
+
+                                h-2.5
+                                w-20
+
+                                rounded-full
+
+                                bg-[#EEF3E3]
+                            "
+                        />
 
                     </div>
 
@@ -26,7 +88,9 @@ function ActivitySkeleton() {
             ))}
 
         </div>
+
     );
+
 }
 
 export default ActivitySkeleton;

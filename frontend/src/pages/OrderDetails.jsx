@@ -27,6 +27,8 @@ function OrderDetails() {
     isLoading,
     isError,
     error,
+    refetch,
+    isRefetching,
   } = useOrder(id);
 
   const [showCompletion, setShowCompletion] = useState(false);
@@ -35,24 +37,9 @@ function OrderDetails() {
 
   const completeOrderMutation = useCompleteOrder(id);
 
-  const toggleChecklist = async (itemId) => {
+  const toggleChecklist = (itemId) => {
 
-    if (toggleChecklistMutation.isPending) return;
-
-    try {
-
-      await toggleChecklistMutation.mutateAsync(itemId);
-
-    } catch (err) {
-
-      console.error(err);
-
-      showError(
-        err?.response?.data?.message ||
-        "Failed to update checklist."
-      );
-
-    }
+    toggleChecklistMutation.mutate(itemId);
 
   };
 
@@ -83,6 +70,8 @@ function OrderDetails() {
 
   if (isLoading) {
 
+    console.log("OrderDetails loading...");
+
     return (
 
       <div className="animate-pulse pb-28">
@@ -112,16 +101,16 @@ function OrderDetails() {
 
     return (
 
-        <QueryErrorState
-            title="Failed to load order details."
-            message={error.message}
-            onRetry={refetch}
-            loading={isRefetching}
-        />
+      <QueryErrorState
+        title="Failed to load order details."
+        message={error.message}
+        onRetry={refetch}
+        loading={isRefetching}
+      />
 
     );
 
-}
+  }
 
   if (!order) {
 
@@ -139,10 +128,7 @@ function OrderDetails() {
 
   }
 
-  const canComplete =
-    order.completedItems === order.totalItems &&
-    order.totalItems > 0;
-
+  const canComplete = order.totalItems > 0;
   const completedItems = order.completedItems ?? 0;
   const totalItems = order.totalItems ?? 0;
   const progress = order.progress ?? 0;
@@ -194,8 +180,7 @@ function OrderDetails() {
           checklist={order.checklist}
           onToggle={toggleChecklist}
           readOnly={
-            order.status === "completed" ||
-            toggleChecklistMutation.isPending
+            order.status === "completed"
           }
         />
 
@@ -205,7 +190,7 @@ function OrderDetails() {
 
         <CompleteOrderButton
           disabled={
-            !canComplete ||
+            order.progress !== 100 ||
             completeOrderMutation.isPending
           }
           onComplete={handleCompleteOrder}

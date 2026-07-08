@@ -1,4 +1,7 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+    useMutation,
+    useQueryClient,
+} from "@tanstack/react-query";
 
 import { toggleChecklist } from "../api/checklist.js";
 import { queryKeys } from "../lib/queryKeys.js";
@@ -22,32 +25,46 @@ export function useToggleChecklist(orderId) {
             );
 
             if (!previousOrder) {
-                return { previousOrder };
+
+                return {
+                    previousOrder,
+                };
+
             }
 
             queryClient.setQueryData(
 
                 queryKeys.orders.detail(orderId),
 
-                (oldOrder) => {
+                oldOrder => {
 
                     if (!oldOrder) return oldOrder;
 
-                    const checklist = oldOrder.checklist.map(item => {
+                    const checklist =
+                        oldOrder.checklist.map(item => {
 
-                        if (item._id !== itemId) return item;
+                            if (item._id !== itemId) {
 
-                        return {
-                            ...item,
-                            completed: !item.completed,
-                        };
+                                return item;
 
-                    });
+                            }
+
+                            return {
+
+                                ...item,
+                                completed: !item.completed,
+
+                            };
+
+                        });
 
                     const completedItems =
-                        checklist.filter(item => item.completed).length;
+                        checklist.filter(
+                            item => item.completed
+                        ).length;
 
-                    const totalItems = checklist.length;
+                    const totalItems =
+                        checklist.length;
 
                     const progress =
                         totalItems === 0
@@ -69,10 +86,9 @@ export function useToggleChecklist(orderId) {
                         progress,
 
                         status:
-                            completedItems === totalItems &&
-                                totalItems > 0
-                                ? "completed"
-                                : "pending",
+                            progress === 0
+                                ? "pending"
+                                : "in-progress",
 
                     };
 
@@ -81,7 +97,9 @@ export function useToggleChecklist(orderId) {
             );
 
             return {
+
                 previousOrder,
+
             };
 
         },
@@ -99,10 +117,22 @@ export function useToggleChecklist(orderId) {
 
         },
 
-        onSettled: () => {
+        onSuccess: () => {
 
             queryClient.invalidateQueries({
-                queryKey: queryKeys.orders.detail(orderId),
+                queryKey: queryKeys.dashboard.stats,
+            });
+
+            queryClient.invalidateQueries({
+                queryKey: queryKeys.dashboard.recentOrders,
+            });
+
+            queryClient.invalidateQueries({
+                queryKey: queryKeys.orders.all,
+            });
+
+            queryClient.invalidateQueries({
+                queryKey: queryKeys.activity,
             });
 
         },

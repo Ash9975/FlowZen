@@ -3,9 +3,15 @@ import { motion } from "framer-motion";
 import OrderCard from "../dashboard/OrderCard";
 
 function OrdersList({
+
     orders,
+
+    showDelete = false,
+
 }) {
+
     return (
+
         <motion.div
             initial="hidden"
             animate="show"
@@ -13,13 +19,15 @@ function OrdersList({
                 hidden: {},
                 show: {
                     transition: {
-                        staggerChildren: .08,
+                        staggerChildren: 0.08,
                     },
                 },
             }}
             className="space-y-5"
         >
+
             {orders.map((order) => (
+
                 <motion.div
                     key={order._id}
                     variants={{
@@ -33,13 +41,20 @@ function OrdersList({
                         },
                     }}
                 >
+
                     <OrderCard
                         order={order}
+                        showDelete={showDelete}
                     />
+
                 </motion.div>
+
             ))}
+
         </motion.div>
+
     );
+
 }
 
 export default OrdersList;

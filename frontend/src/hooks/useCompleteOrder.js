@@ -1,21 +1,26 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+    useMutation,
+    useQueryClient,
+} from "@tanstack/react-query";
 
 import { completeOrder } from "../api/orderMutations.js";
 import { queryKeys } from "../lib/queryKeys.js";
-
+import { invalidateAppQueries } from "../lib/invalidateAppQueries.js";
 export function useCompleteOrder(orderId) {
 
     const queryClient = useQueryClient();
 
     return useMutation({
 
-        mutationFn: () => completeOrder(orderId),
+        mutationFn: () =>
+            completeOrder(orderId),
 
-        onSuccess: () => {
+        onSuccess: (data) => {
 
-            queryClient.invalidateQueries({
-                queryKey: queryKeys.orders.detail(orderId),
-            });
+            queryClient.setQueryData(
+                queryKeys.orders.detail(orderId),
+                data.order
+            );
 
             queryClient.invalidateQueries({
                 queryKey: queryKeys.orders.all,

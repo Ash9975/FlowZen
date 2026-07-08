@@ -1,19 +1,26 @@
 import { motion } from "framer-motion";
 
-import DashboardHeader from "../components/dashboard/DashboardHeader";
-import StatsCards from "../components/dashboard/StatsCard";
-import RecentOrders from "../components/dashboard/RecentOrders";
-
-import StatsSkeleton from "../components/dashboard/StatsSkeleton";
-import RecentOrdersSkeleton from "../components/dashboard/RecentOrdersSkeleton";
-import QueryErrorState from "../components/common/QueryErrorState";
-
+import { useProfile } from "../hooks/useProfile";
 import {
     useDashboardStats,
     useRecentOrders,
 } from "../hooks/useDashboard";
 
+import DashboardGreeting from "../components/dashboard/DashboardGreeting";
+import TodayProgress from "../components/dashboard/TodayProgress";
+import QuickActions from "../components/dashboard/QuickActions";
+import StatsCards from "../components/dashboard/StatsCard";
+import RecentOrders from "../components/dashboard/RecentOrders";
+import WeeklyPerformance from "../components/dashboard/WeeklyPerformance";
+import { useWeeklyPerformance } from "../hooks/useWeeklyPerformance.js";
+
+import StatsSkeleton from "../components/dashboard/StatsSkeleton";
+import RecentOrdersSkeleton from "../components/dashboard/RecentOrdersSkeleton";
+import QueryErrorState from "../components/common/QueryErrorState";
+
 function Dashboard() {
+
+    const { data: user } = useProfile();
 
     const {
         data: stats,
@@ -24,6 +31,8 @@ function Dashboard() {
         isRefetching: statsRefetching,
     } = useDashboardStats();
 
+  
+
     const {
         data: orders,
         isLoading: ordersLoading,
@@ -33,11 +42,16 @@ function Dashboard() {
         isRefetching: ordersRefetching,
     } = useRecentOrders();
 
+    const {
+        data: weeklyPerformance,
+        isLoading: weeklyLoading,
+    } = useWeeklyPerformance();
+
     const container = {
         hidden: {},
         show: {
             transition: {
-                staggerChildren: 0.05,
+                staggerChildren: 0.08,
             },
         },
     };
@@ -45,13 +59,13 @@ function Dashboard() {
     const item = {
         hidden: {
             opacity: 0,
-            y: 6,
+            y: 12,
         },
         show: {
             opacity: 1,
             y: 0,
             transition: {
-                duration: 0.2,
+                duration: 0.25,
                 ease: "easeOut",
             },
         },
@@ -62,28 +76,22 @@ function Dashboard() {
         return (
 
             <QueryErrorState
-
                 title="Failed to load dashboard"
-
                 message={
                     statsErrorMessage?.message ||
                     ordersErrorMessage?.message ||
                     "Something went wrong."
                 }
-
                 loading={
                     statsRefetching ||
                     ordersRefetching
                 }
-
                 onRetry={() => {
 
                     refetchStats();
-
                     refetchOrders();
 
                 }}
-
             />
 
         );
@@ -92,19 +100,26 @@ function Dashboard() {
 
     return (
 
-        <div className="px-6 pt-8 pb-28">
+        <div className="pb-28 pt-7">
 
             <motion.div
                 variants={container}
                 initial="hidden"
                 animate="show"
+                className="space-y-6 px-5"
             >
+
+                {/* Greeting */}
 
                 <motion.div variants={item}>
 
-                    <DashboardHeader />
+                    <DashboardGreeting
+                        userName={user?.name}
+                    />
 
                 </motion.div>
+
+                {/* Today's Progress */}
 
                 <motion.div variants={item}>
 
@@ -114,11 +129,56 @@ function Dashboard() {
 
                     ) : (
 
-                        <StatsCards stats={stats} />
+                        <TodayProgress
+                            stats={stats}
+                        />
 
                     )}
 
                 </motion.div>
+
+                {/* Quick Actions */}
+
+                <motion.div variants={item}>
+
+                    <QuickActions />
+
+                </motion.div>
+
+                {/* Stats */}
+
+                <motion.div variants={item}>
+
+                    {statsLoading ? (
+
+                        <StatsSkeleton />
+
+                    ) : (
+
+                        <StatsCards
+                            stats={stats}
+                        />
+
+                    )}
+
+                </motion.div>
+
+                {/* Weekly Performance */}
+
+                <motion.div variants={item}>
+
+                    {!weeklyLoading && (
+
+                        <WeeklyPerformance
+                            data={weeklyPerformance}
+                        />
+
+                    )}
+
+                </motion.div>
+                {/* Next Component */}
+
+                {/* Recent Orders */}
 
                 <motion.div variants={item}>
 
@@ -128,11 +188,16 @@ function Dashboard() {
 
                     ) : (
 
-                        <RecentOrders orders={orders} />
+                        <RecentOrders
+                            orders={orders}
+                        />
 
                     )}
 
                 </motion.div>
+
+                {/* Recent Activity */}
+                {/* Next Component */}
 
             </motion.div>
 

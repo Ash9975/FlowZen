@@ -25,18 +25,18 @@ function Orders() {
 
     if (isError) {
 
-    return (
+        return (
 
-        <QueryErrorState
-            title="Failed to load orders."
-            message={error.message}
-            onRetry={refetch}
-            loading={isRefetching}
-        />
+            <QueryErrorState
+                title="Failed to load orders."
+                message={error.message}
+                onRetry={refetch}
+                loading={isRefetching}
+            />
 
-    );
+        );
 
-}
+    }
 
     return (
 
@@ -73,6 +73,7 @@ function Orders() {
 
                     <OrdersList
                         orders={orders}
+                        showDelete
                     />
 
                 )

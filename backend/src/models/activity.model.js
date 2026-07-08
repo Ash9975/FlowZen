@@ -1,8 +1,10 @@
 import mongoose from "mongoose";
 
 const activitySchema = new mongoose.Schema(
+
     {
-        user: {
+
+        owner: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "User",
             required: true,
@@ -16,30 +18,25 @@ const activitySchema = new mongoose.Schema(
         type: {
             type: String,
             enum: [
-                "created",
-                "updated",
-                "completed",
-                "deleted",
-                "ai",
+                "order-created",
+                "packing-started",
+                "order-completed",
+                "order-deleted",
             ],
             required: true,
         },
 
-        title: {
+        customerName: {
             type: String,
             required: true,
-            trim: true,
         },
 
-        description: {
-            type: String,
-            required: true,
-            trim: true,
-        },
     },
+
     {
         timestamps: true,
     }
+
 );
 
 export default mongoose.model(

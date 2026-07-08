@@ -1,7 +1,8 @@
 import Order from "../models/order.model.js";
 import Checklist from "../models/checklist.model.js";
+import Activity from "../models/activity.model.js";
 import uploadToCloudinary from "../utils/uploadToCloudinary.js";
-import { logActivity } from "../services/activity.service.js";
+import createActivity from "../utils/createActivity.js";
 
 export const createOrder = async (req, res) => {
   try {
@@ -27,23 +28,26 @@ export const createOrder = async (req, res) => {
         req.file.buffer
       );
 
-    const order =
-      await Order.create({
-        customerName,
-        uploadedFileUrl:
-          uploadedFile.secure_url,
+    const order = await Order.create({
+      customerName,
+      uploadedFileUrl:
+        uploadedFile.secure_url,
 
-        fileType: req.file.mimetype,
-        owner: req.user._id,
-      });
-
-    await logActivity({
-      user: req.user._id,
-      order: order._id,
-      type: "created",
-      title: "Order Created",
-      description: `${order.customerName}'s order was created.`,
+      fileType: req.file.mimetype,
+      owner: req.user._id,
     });
+
+    await createActivity(
+
+      req.user._id,
+
+      order._id,
+
+      "order-created",
+
+      order.customerName
+
+    );
 
     return res.status(201).json({
       success: true,
@@ -175,14 +179,6 @@ export const updateOrder = async (req, res) => {
       });
     }
 
-    await logActivity({
-      user: req.user._id,
-      order: order._id,
-      type: "updated",
-      title: "Order Updated",
-      description: `${order.customerName}'s order was updated.`,
-    });
-
     return res.status(200).json({
       success: true,
       order,
@@ -197,37 +193,71 @@ export const updateOrder = async (req, res) => {
 };
 
 export const deleteOrder = async (req, res) => {
+
   try {
-    await logActivity({
-      user: req.user._id,
-      order: order._id,
-      type: "deleted",
-      title: "Order Deleted",
-      description: `${order.customerName}'s order was deleted.`,
-    });
-    const order = await Order.findOneAndDelete({
+
+    const order = await Order.findOne({
+
       _id: req.params.id,
+
       owner: req.user._id,
+
     });
 
     if (!order) {
+
       return res.status(404).json({
+
         success: false,
+
         message: "Order not found",
+
       });
+
     }
 
-    return res.status(200).json({
+    await Checklist.deleteMany({
+      order: order._id,
+    });
+
+    await Activity.deleteMany({
+      order: order._id,
+    });
+
+    await createActivity(
+
+      req.user._id,
+
+      order._id,
+
+      "order-deleted",
+
+      order.customerName
+
+    );
+
+    await order.deleteOne();
+
+    return res.json({
+
       success: true,
+
       message: "Order deleted successfully",
+
     });
 
   } catch (error) {
+
     return res.status(500).json({
+
       success: false,
+
       message: error.message,
+
     });
+
   }
+
 };
 
 export const completeOrder = async (req, res) => {
@@ -255,13 +285,17 @@ export const completeOrder = async (req, res) => {
     order.completedAt = new Date();
 
     await order.save();
-    await logActivity({
-      user: req.user._id,
-      order: order._id,
-      type: "completed",
-      title: "Order Completed",
-      description: `${order.customerName}'s order was packed successfully.`,
-    });
+    await createActivity(
+
+      req.user._id,
+
+      order._id,
+
+      "order-completed",
+
+      order.customerName
+
+    );
 
     return res.status(200).json({
       success: true,

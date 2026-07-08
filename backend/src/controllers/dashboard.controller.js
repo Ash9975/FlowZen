@@ -8,39 +8,88 @@ export const getDashboardStats = async (
 
         const ownerId = req.user._id;
 
-        const totalOrders =
-            await Order.countDocuments({
-                owner: ownerId,
-            });
-
-        const pendingOrders =
-            await Order.countDocuments({
-                owner: ownerId,
-                status: "pending",
-            });
-
-        const inProgressOrders =
-            await Order.countDocuments({
-                owner: ownerId,
-                status: "in-progress",
-            });
-
-        const completedOrders =
-            await Order.countDocuments({
-                owner: ownerId,
-                status: "completed",
-            });
-
         const today = new Date();
         today.setHours(0, 0, 0, 0);
 
-        const todayOrders =
-            await Order.countDocuments({
+        const [
+            totalOrders,
+            pendingOrders,
+            inProgressOrders,
+            completedOrders,
+            todayOrders,
+            completedToday,
+            packed,
+        ] = await Promise.all([
+
+            Order.countDocuments({
+                owner: ownerId,
+            }),
+
+            Order.countDocuments({
+                owner: ownerId,
+                status: "pending",
+            }),
+
+            Order.countDocuments({
+                owner: ownerId,
+                status: "in-progress",
+            }),
+
+            Order.countDocuments({
+                owner: ownerId,
+                status: "completed",
+            }),
+
+            Order.countDocuments({
                 owner: ownerId,
                 createdAt: {
                     $gte: today,
                 },
-            });
+            }),
+
+            Order.countDocuments({
+                owner: ownerId,
+                status: "completed",
+                completedAt: {
+                    $gte: today,
+                },
+            }),
+
+            Order.aggregate([
+                {
+                    $match: {
+                        owner: ownerId,
+                    },
+                },
+                {
+                    $group: {
+                        _id: null,
+                        total: {
+                            $sum: "$completedItems",
+                        },
+                    },
+                },
+            ]),
+
+        ]);
+
+        const todayProgress =
+            todayOrders === 0
+                ? 0
+                : Math.round(
+                    (completedToday / todayOrders) * 100
+                );
+
+        console.log({
+            totalOrders,
+            pendingOrders,
+            inProgressOrders,
+            completedOrders,
+            todayOrders,
+            completedToday,
+            todayProgress,
+            itemsPacked: packed[0]?.total ?? 0,
+        });
 
         return res.status(200).json({
             success: true,
@@ -50,6 +99,9 @@ export const getDashboardStats = async (
                 inProgressOrders,
                 completedOrders,
                 todayOrders,
+                completedToday,
+                todayProgress,
+                itemsPacked: packed[0]?.total ?? 0,
             },
         });
 
@@ -72,11 +124,14 @@ export const getRecentOrders = async (
         const orders = await Order.find({
             owner: req.user._id,
         })
-            .select("customerName status progress totalItems completedItems createdAt"   )
+            .select(
+                "customerName status progress totalItems completedItems createdAt"
+            )
             .sort({
                 createdAt: -1,
             })
-            .limit(10);
+            .limit(10)
+            .lean();
 
         return res.status(200).json({
             success: true,
@@ -91,4 +146,76 @@ export const getRecentOrders = async (
         });
 
     }
+};
+
+export const getWeeklyPerformance = async (req, res) => {
+
+    try {
+
+        const ownerId = req.user._id;
+
+        const today = new Date();
+        today.setHours(23, 59, 59, 999);
+
+        const sevenDaysAgo = new Date();
+        sevenDaysAgo.setDate(today.getDate() - 6);
+        sevenDaysAgo.setHours(0, 0, 0, 0);
+
+        const data = await Order.aggregate([
+
+            {
+                $match: {
+                    owner: ownerId,
+                    completedAt: {
+                        $gte: sevenDaysAgo,
+                        $lte: today,
+                    },
+                    status: "completed",
+                },
+            },
+
+            {
+                $group: {
+                    _id: {
+                        $dateToString: {
+                            format: "%Y-%m-%d",
+                            date: "$completedAt",
+                        },
+                    },
+                    completed: {
+                        $sum: 1,
+                    },
+                },
+            },
+
+            {
+                $sort: {
+                    _id: 1,
+                },
+            },
+
+        ]);
+
+        return res.status(200).json({
+
+            success: true,
+
+            performance: data,
+
+        });
+
+    }
+
+    catch (error) {
+
+        return res.status(500).json({
+
+            success: false,
+
+            message: error.message,
+
+        });
+
+    }
+
 };

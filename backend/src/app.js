@@ -19,7 +19,7 @@ app.use(helmet());
 app.use(
   cors({
     origin: [
-      "http://localhost:5173",
+    //   "http://localhost:5173",
       process.env.CLIENT_URL,
     ],
     credentials: true,
@@ -61,6 +61,8 @@ app.use("/api/dashboard", dashboardRoutes);
 
 app.use("/api/health", healthRoutes);
 app.use("/api/activity",activityRoutes);
+
+app.use("/api/activity", activityRoutes);
 
 app.use(errorHandler);
 

@@ -4,8 +4,8 @@ import {
 } from "@tanstack/react-query";
 
 import { updateChecklistItem } from "../api/checklistMutations.js";
-
 import { queryKeys } from "../lib/queryKeys.js";
+import { invalidateAppQueries } from "../lib/invalidateAppQueries.js";
 
 export function useUpdateChecklistItem(orderId) {
 
@@ -22,22 +22,12 @@ export function useUpdateChecklistItem(orderId) {
                 payload,
             }),
 
-        onSuccess: () => {
+        onSuccess: async () => {
 
-            queryClient.invalidateQueries({
-
-                queryKey:
-                    queryKeys.orders.checklist(orderId),
-
-            });
-
-            queryClient.invalidateQueries({
-
-                queryKey:
-                    queryKeys.orders.detail(orderId),
-
-            });
-
+            await invalidateAppQueries(
+                queryClient,
+                orderId
+            );
         },
 
     });

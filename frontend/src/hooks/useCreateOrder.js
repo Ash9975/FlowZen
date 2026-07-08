@@ -9,6 +9,7 @@ import {
 } from "../api/createOrder.js";
 
 import { queryKeys } from "../lib/queryKeys.js";
+import { invalidateAppQueries } from "../lib/invalidateAppQueries.js";
 
 export function useCreateOrder() {
 
@@ -29,35 +30,12 @@ export function useCreateOrder() {
 
         },
 
-        onSuccess: () => {
+        onSuccess: async () => {
 
-            queryClient.invalidateQueries({
+            await invalidateAppQueries(
+                queryClient
 
-                queryKey:
-                    queryKeys.orders.all,
-
-            });
-
-            queryClient.invalidateQueries({
-
-                queryKey:
-                    queryKeys.dashboard.stats,
-
-            });
-
-            queryClient.invalidateQueries({
-
-                queryKey:
-                    queryKeys.dashboard.recentOrders,
-
-            });
-
-            queryClient.invalidateQueries({
-
-                queryKey:
-                    queryKeys.activity,
-
-            });
+            );
 
         },
 

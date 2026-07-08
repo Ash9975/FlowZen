@@ -1,6 +1,7 @@
 import Checklist from "../models/checklist.model.js";
 import Order from "../models/order.model.js";
 import recalculateOrder from "../utils/recalculateOrder.js";
+import createActivity from "../utils/createActivity.js";
 
 export const createChecklistItem = async (req, res) => {
   try {
@@ -40,11 +41,11 @@ export const createChecklistItem = async (req, res) => {
       unit,
     });
 
-    const updatedOrder = await recalculateOrder(orderId);
+    const updatedOrder = await recalculateOrder(item.order);
 
-    return res.status(201).json({
+    return res.status(200).json({
       success: true,
-      item,
+      item: updatedItem,
       order: updatedOrder,
     });
 
@@ -109,10 +110,13 @@ export const toggleChecklistItem = async (req, res) => {
       });
     }
 
+
+
     const order = await Order.findOne({
       _id: item.order,
       owner: req.user._id,
     });
+
 
     if (!order) {
       return res.status(403).json({
@@ -120,6 +124,8 @@ export const toggleChecklistItem = async (req, res) => {
         message: "Unauthorized",
       });
     }
+
+    const wasPending = order.progress === 0;
 
     // Prevent changes after completion
     if (order.status === "completed") {
@@ -134,7 +140,24 @@ export const toggleChecklistItem = async (req, res) => {
     await item.save();
 
     const updatedOrder = await recalculateOrder(item.order);
+    if (
+      wasPending &&
+      updatedOrder.progress > 0
+    ) {
 
+      await createActivity(
+
+        req.user._id,
+
+        updatedOrder._id,
+
+        "packing-started",
+
+        updatedOrder.customerName
+
+      );
+
+    }
     return res.status(200).json({
       success: true,
       message: item.completed

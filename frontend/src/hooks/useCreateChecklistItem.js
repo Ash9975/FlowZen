@@ -4,9 +4,8 @@ import {
 } from "@tanstack/react-query";
 
 import { createChecklistItem } from "../api/checklistMutations.js";
-
 import { queryKeys } from "../lib/queryKeys.js";
-
+import { invalidateAppQueries } from "../lib/invalidateAppQueries.js";
 export function useCreateChecklistItem(orderId) {
 
     const queryClient = useQueryClient();
@@ -19,21 +18,12 @@ export function useCreateChecklistItem(orderId) {
                 payload,
             }),
 
-        onSuccess: () => {
+        onSuccess: async () => {
 
-            queryClient.invalidateQueries({
-
-                queryKey:
-                    queryKeys.orders.checklist(orderId),
-
-            });
-
-            queryClient.invalidateQueries({
-
-                queryKey:
-                    queryKeys.orders.detail(orderId),
-
-            });
+            await invalidateAppQueries(
+                queryClient,
+                orderId
+            );
 
         },
 

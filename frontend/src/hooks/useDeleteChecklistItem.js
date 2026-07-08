@@ -4,8 +4,8 @@ import {
 } from "@tanstack/react-query";
 
 import { deleteChecklistItem } from "../api/checklistMutations.js";
-
 import { queryKeys } from "../lib/queryKeys.js";
+import { invalidateAppQueries } from "../lib/invalidateAppQueries.js";
 
 export function useDeleteChecklistItem(orderId) {
 
@@ -15,21 +15,12 @@ export function useDeleteChecklistItem(orderId) {
 
         mutationFn: deleteChecklistItem,
 
-        onSuccess: () => {
+        onSuccess: async () => {
 
-            queryClient.invalidateQueries({
-
-                queryKey:
-                    queryKeys.orders.checklist(orderId),
-
-            });
-
-            queryClient.invalidateQueries({
-
-                queryKey:
-                    queryKeys.orders.detail(orderId),
-
-            });
+            await invalidateAppQueries(
+                queryClient,
+                orderId
+            );
 
         },
 
