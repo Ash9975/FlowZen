@@ -30,22 +30,28 @@ https://github.com/Ash9975/FlowZen
 
 # 📸 Screenshots
 
+> Landing Page
+<p align="center">
+<img width="1860" height="970" alt="Screenshot 2026-06-25 023322" src="https://github.com/user-attachments/assets/d0929dfa-bda4-45f3-bf40-ced09306afef" />
+</p>
+
+
 > Dashboard
 
 <p align="center">
-<img src="YOUR_SCREENSHOT_1" width="900"/>
+<img width="1012" height="922" alt="image" src="https://github.com/user-attachments/assets/677f997f-6981-4b0f-88b7-02cf7cad5ffb" />
 </p>
 
 > Order Details
 
 <p align="center">
-<img src="YOUR_SCREENSHOT_2" width="900"/>
+<img width="813" height="923" alt="image" src="https://github.com/user-attachments/assets/10d6502d-1275-443b-bdde-650915b0eef9" />
 </p>
 
-> Packing Checklist
+> Activity
 
 <p align="center">
-<img src="YOUR_SCREENSHOT_3" width="900"/>
+<img width="783" height="921" alt="image" src="https://github.com/user-attachments/assets/cdab1ff0-19b8-4a92-af9f-65f9d34327a1" />
 </p>
 
 ---
