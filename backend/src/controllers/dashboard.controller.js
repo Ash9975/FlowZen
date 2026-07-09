@@ -80,16 +80,6 @@ export const getDashboardStats = async (
                     (completedToday / todayOrders) * 100
                 );
 
-        console.log({
-            totalOrders,
-            pendingOrders,
-            inProgressOrders,
-            completedOrders,
-            todayOrders,
-            completedToday,
-            todayProgress,
-            itemsPacked: packed[0]?.total ?? 0,
-        });
 
         return res.status(200).json({
             success: true,

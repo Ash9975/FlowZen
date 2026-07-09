@@ -18,7 +18,7 @@ const extractOrderItems = async (
               "AI request timeout"
             )
           ),
-        60000
+        50000
       )
     );
 

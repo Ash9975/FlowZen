@@ -219,6 +219,24 @@ function EditChecklist() {
 
     }
 
+    const hasChanges =
+        JSON.stringify(
+            checklist.map((i) => ({
+                itemName: i.itemName,
+                quantity: Number(i.quantity),
+                unit: i.unit,
+            }))
+        ) !==
+        JSON.stringify(
+            originalChecklist.map((i) => ({
+                itemName: i.itemName,
+                quantity: Number(i.quantity),
+                unit: i.unit,
+            }))
+        ) ||
+        deletedItems.length > 0 ||
+        checklist.some((i) => i.isNew);
+
     if (isError) {
 
         return (
@@ -277,7 +295,7 @@ function EditChecklist() {
 
     return (
 
-        <div className="bg-gray-50 pb-36">
+        <div className="pb-30">
 
             <EditHeader />
 
@@ -331,8 +349,24 @@ function EditChecklist() {
 
             <SaveBar
                 loading={saving}
-                disabled={!isValidChecklist}
-                onCancel={() => navigate(-1)}
+                disabled={!isValidChecklist || !hasChanges}
+                hasChanges={hasChanges}
+                onCancel={() => {
+
+                    if (hasChanges) {
+
+                        const confirmLeave =
+                            window.confirm(
+                                "You have unsaved changes. Discard them?"
+                            );
+
+                        if (!confirmLeave) return;
+
+                    }
+
+                    navigate(-1);
+
+                }}
                 onSave={handleSave}
             />
 

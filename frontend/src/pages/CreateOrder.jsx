@@ -9,6 +9,7 @@ import CustomerInput from "../components/create-order/CustomerInput";
 import UploadBox from "../components/create-order/UploadBox";
 import NotesInput from "../components/create-order/NotesInput";
 import CreateButton from "../components/create-order/CreateButton";
+import OrderSourceSelector from "../components/create-order/OrderSourceSelector";
 
 import {
   showSuccess,
@@ -24,6 +25,12 @@ function CreateOrder() {
   const [customerName, setCustomerName] = useState("");
   const [notes, setNotes] = useState("");
   const [file, setFile] = useState(null);
+
+  const [source, setSource] =
+    useState("upload");
+
+  const [orderText, setOrderText] =
+    useState("");
 
   const container = {
     hidden: {},
@@ -54,11 +61,25 @@ function CreateOrder() {
     if (createOrderMutation.isPending) return;
 
     if (!customerName.trim()) {
-      return showError("Enter customer name");
+      return showError("Please enter a customer name.");
     }
 
-    if (!file) {
-      return showError("Upload an order image");
+    if (
+      source === "text" &&
+      !orderText.trim()
+    ) {
+      return showError(
+        "Please paste an order message."
+      );
+    }
+
+    if (
+      source !== "text" &&
+      !file
+    ) {
+      return showError(
+        "Please select an order image."
+      );
     }
 
     try {
@@ -71,21 +92,39 @@ function CreateOrder() {
       );
 
       formData.append(
-        "file",
-        file
-      );
-
-      formData.append(
         "notes",
         notes.trim()
       );
+
+      formData.append(
+        "source",
+        source
+      );
+
+      if (source === "text") {
+
+        formData.append(
+          "orderText",
+          orderText.trim()
+        );
+
+      } else {
+
+        formData.append(
+          "file",
+          file
+        );
+
+      }
 
       const data =
         await createOrderMutation.mutateAsync(
           formData
         );
 
-      showSuccess("Order created successfully.");
+      showSuccess(
+        "Order created successfully."
+      );
 
       navigate(
         `/orders/${data.order._id}`
@@ -135,14 +174,92 @@ function CreateOrder() {
               onChange={setCustomerName}
             />
 
+            <OrderSourceSelector
+              source={source}
+              setSource={(value) => {
+
+                setSource(value);
+
+                setFile(null);
+
+                setOrderText("");
+
+              }}
+            />
+
           </motion.div>
 
           <motion.div variants={item}>
 
-            <UploadBox
-              file={file}
-              setFile={setFile}
-            />
+            {(source === "upload" ||
+              source === "camera") && (
+
+              <UploadBox
+                file={file}
+                setFile={setFile}
+                cameraOnly={
+                  source === "camera"
+                }
+              />
+
+            )}
+
+            {source === "text" && (
+
+              <div className="mt-6">
+
+                <label className="text-[15px] font-bold text-gray-700">
+
+                  Paste Order Message
+
+                </label>
+
+                <p className="mt-1 text-sm text-gray-500">
+
+                  Paste a WhatsApp message,
+                  notes, or any text order.
+
+                </p>
+
+                <textarea
+                  rows={10}
+                  value={orderText}
+                  onChange={(e) =>
+                    setOrderText(
+                      e.target.value
+                    )
+                  }
+                  placeholder={`Rahul Caterers
+
+Tomato - 20 kg
+Potato - 10 kg
+Onion - 5 kg
+Green Chilli - 2 kg
+Coriander - 10 bunch
+Lemon - 100 pcs`}
+                  className="
+                    mt-3
+                    w-full
+                    rounded-2xl
+                    border
+                    border-gray-200
+                    p-4
+                    font-medium
+                    resize-y
+                    focus:border-primary
+                    focus:outline-none
+                  "
+                />
+
+                <p className="mt-2 text-right text-xs text-gray-400">
+
+                  {orderText.length} characters
+
+                </p>
+
+              </div>
+
+            )}
 
           </motion.div>
 
@@ -158,8 +275,12 @@ function CreateOrder() {
           <motion.div variants={item}>
 
             <CreateButton
-              loading={createOrderMutation.isPending}
-              onClick={handleCreateOrder}
+              loading={
+                createOrderMutation.isPending
+              }
+              onClick={
+                handleCreateOrder
+              }
             />
 
           </motion.div>

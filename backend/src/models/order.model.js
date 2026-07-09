@@ -24,6 +24,11 @@ const orderSchema = new mongoose.Schema(
       default: null,
     },
 
+    orderText: {
+      type: String,
+      default: null,
+    },
+
     processed: {
       type: Boolean,
       default: false,

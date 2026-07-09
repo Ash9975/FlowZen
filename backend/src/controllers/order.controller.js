@@ -7,7 +7,11 @@ import createActivity from "../utils/createActivity.js";
 export const createOrder = async (req, res) => {
   try {
 
-    const { customerName } = req.body;
+    const {
+      customerName,
+      source,
+      orderText,
+    } = req.body;
 
     if (!customerName) {
       return res.status(400).json({
@@ -16,25 +20,60 @@ export const createOrder = async (req, res) => {
       });
     }
 
-    if (!req.file) {
+    if (
+      source === "text" &&
+      !orderText?.trim()
+    ) {
       return res.status(400).json({
         success: false,
-        message: "Order list file required",
+        message: "Order text required",
       });
     }
 
-    const uploadedFile =
-      await uploadToCloudinary(
-        req.file.buffer
-      );
+    if (
+      source !== "text" &&
+      !req.file
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "Order image required",
+      });
+    }
+
+
+    let uploadedFileUrl = null;
+    let fileType = "text";
+
+    if (source !== "text") {
+
+      const uploadedFile =
+        await uploadToCloudinary(
+          req.file.buffer
+        );
+
+      uploadedFileUrl =
+        uploadedFile.secure_url;
+
+      fileType =
+        req.file.mimetype;
+
+    }
 
     const order = await Order.create({
-      customerName,
-      uploadedFileUrl:
-        uploadedFile.secure_url,
 
-      fileType: req.file.mimetype,
+      customerName,
+
+      uploadedFileUrl,
+
+      fileType,
+
+      orderText:
+        source === "text"
+          ? orderText
+          : null,
+
       owner: req.user._id,
+
     });
 
     await createActivity(

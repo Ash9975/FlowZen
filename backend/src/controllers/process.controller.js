@@ -1,12 +1,11 @@
 import Order from "../models/order.model.js";
 import Checklist from "../models/checklist.model.js";
 import extractOrderItems from "../services/extractOrderItems.js";
-
+import extractOrderItemsFromText from "../services/extractOrderItemsFromText.js";
 export const processOrder = async (
     req,
     res
 ) => {
-    console.log("PROCESS ORDER HIT");
     try {
 
         const order =
@@ -34,11 +33,23 @@ export const processOrder = async (
             });
         }
 
-        const aiResponse =
-            await extractOrderItems(
-                order.uploadedFileUrl
-            )
+        let aiResponse;
 
+        if (order.orderText) {
+
+            aiResponse =
+                await extractOrderItemsFromText(
+                    order.orderText
+                );
+
+        } else {
+
+            aiResponse =
+                await extractOrderItems(
+                    order.uploadedFileUrl
+                );
+
+        }
         let items;
 
         try {

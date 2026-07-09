@@ -20,19 +20,12 @@ function SaveBar({
             }}
             className="
       fixed
-      bottom-0
+      bottom-23
       left-1/2
       -translate-x-1/2
 
       w-full
       max-w-md
-
-      border-t
-      border-gray-200
-
-      bg-white/95
-      backdrop-blur-xl
-
       px-5
       py-4
       z-50
