@@ -1,7 +1,6 @@
 import Order from "../models/order.model.js";
 import Checklist from "../models/checklist.model.js";
 import extractOrderItems from "../services/extractOrderItems.js";
-import { logActivity } from "../services/activity.service.js";
 
 export const processOrder = async (
     req,
@@ -40,7 +39,16 @@ export const processOrder = async (
                 order.uploadedFileUrl
             )
 
-        const items = JSON.parse(aiResponse);
+        let items;
+
+        try {
+            items = JSON.parse(aiResponse);
+        } catch (error) {
+            return res.status(500).json({
+                success: false,
+                message: "AI returned an invalid response.",
+            });
+        }
 
 
 
@@ -53,14 +61,6 @@ export const processOrder = async (
                     unit: item.unit,
                 }))
             );
-
-        await logActivity({
-            user: req.user._id,
-            order: order._id,
-            type: "ai",
-            title: "Checklist Generated",
-            description: `AI generated ${items.length} checklist items.`,
-        });
 
         await Order.findByIdAndUpdate(
             order._id,
@@ -82,9 +82,11 @@ export const processOrder = async (
 
         console.error(error);
 
+        console.error("Process Order Error:", error);
+
         return res.status(500).json({
             success: false,
-            message: "AI service temporarily unavailable. Please try again."
+            message: error.message,
         });
     }
 };

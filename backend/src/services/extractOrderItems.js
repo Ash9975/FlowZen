@@ -18,23 +18,22 @@ const extractOrderItems = async (
               "AI request timeout"
             )
           ),
-        30000
+        60000
       )
     );
 
-  const response =
-    await Promise.race([
-      ai.models.generateContent({
-        model: "gemini-2.5-flash-lite",
-        contents: [
-          {
-            inlineData: {
-              mimeType: "image/jpeg",
-              data: base64Image,
-            },
+  const response = await Promise.race([
+    ai.models.generateContent({
+      model: "gemini-2.5-flash-lite",
+      contents: [
+        {
+          inlineData: {
+            mimeType: "image/jpeg",
+            data: base64Image,
           },
-          {
-            text: `
+        },
+        {
+          text: `
 You are an order extraction system.
 
 Analyze the uploaded image and extract every order item.
@@ -85,21 +84,44 @@ Example Output:
   }
 ]
 `
-          },
-        ],
-      }),
-      timeoutPromise,
-    ]);
+        },
+      ],
+    }),
+    timeoutPromise,
+  ]);
+
+  if (!response?.text) {
+
+    throw new Error(
+      "No response received from Gemini."
+    );
+
+  }
+
   console.log(response.text);
 
   const cleanedResponse = response.text
     .replace(/```json/g, "")
     .replace(/```/g, "")
     .trim();
-    
+
   console.log(cleanedResponse);
 
-  return cleanedResponse;
+  let parsed;
+
+  try {
+
+    parsed = JSON.parse(cleanedResponse);
+
+  } catch (error) {
+
+    throw new Error(
+      "Gemini returned invalid JSON."
+    );
+
+  }
+
+  return JSON.stringify(parsed);
 
 };
 

@@ -19,12 +19,17 @@ export function useCreateOrder() {
 
         mutationFn: async (formData) => {
 
-            const order =
-                await createOrder(formData);
+            const order = await createOrder(formData);
 
-            await processOrder(
-                order.order._id
-            );
+            try {
+
+                await processOrder(order.order._id);
+
+            } catch (error) {
+
+                console.error("AI Processing Failed:", error);
+
+            }
 
             return order;
 
@@ -34,7 +39,6 @@ export function useCreateOrder() {
 
             await invalidateAppQueries(
                 queryClient
-
             );
 
         },
