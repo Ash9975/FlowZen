@@ -62,8 +62,6 @@ app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/health", healthRoutes);
 app.use("/api/activity",activityRoutes);
 
-app.use("/api/activity", activityRoutes);
-
 app.use(errorHandler);
 
 export default app;
