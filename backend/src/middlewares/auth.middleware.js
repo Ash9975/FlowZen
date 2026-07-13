@@ -5,6 +5,8 @@ import { isTokenBlacklisted } from "../services/tokenBlacklist.service.js";
 const protect = async (req, res, next) => {
   try {
     const token = req.cookies.token;
+    console.log("Cookies:", req.cookies);
+    console.log("Cookie header:", req.headers.cookie);
 
     if (!token) {
       return res.status(401).json({
